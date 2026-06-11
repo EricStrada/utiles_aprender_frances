@@ -319,9 +319,9 @@ h1{font-family:'Playfair Display',serif;font-size:clamp(22px,4vw,34px);font-weig
 
       <!-- Word list (shown when subcategory selected) -->
       <div class="manage-word-list" id="mg-word-list" style="display:none">
-        <div class="mwl-header">
-          <span id="mg-wl-title">Palabras</span>
-          <span id="mg-wl-count" style="color:var(--goldL)"></span>
+        <div id="mwl-header" class="preview-cat-header">
+          <span id="mg-wl-title" class="preview-cat-name"></span>
+          <span id="mg-wl-count" class="preview-cat-count"></span>
         </div>
         <div id="mg-wl-rows"></div>
       </div>
@@ -995,11 +995,15 @@ function mgBuildCreateSub(cat) {
 function mgShowWordList(sub) {
   const wl=document.getElementById('mg-word-list');
   wl.style.display='';
-  document.getElementById('mg-wl-title').textContent=`Palabras en "${sub.nom}"`;
-  document.getElementById('mg-wl-count').textContent=`${sub.mots.length} palabras`;
+  document.getElementById('mg-wl-title').textContent=`${sub.nom}`;
+  document.getElementById('mg-wl-count').textContent=`${sub.mots.length}`;
   const rows=document.getElementById('mg-wl-rows');
   if(!sub.mots.length){rows.innerHTML='<div style="padding:16px;font-size:12px;color:var(--gray);text-align:center">Sin palabras</div>';return;}
-  rows.innerHTML=sub.mots.map(m=>`
+  const COLS=['Palabra (fr)','IPA','Género','Otro gén.','Traducción(es)','Sinónimos','Ejemplo','Niv.','Registre'];
+  let html='';
+  html=`<div class="preview-sub">
+        <div class="col-header-row">${COLS.map(l=>`<div class="col-h">${l}</div>`).join('')}</div>`
+  html+=sub.mots.map(m=>`
     <div class="preview-row">
       <div class="cell cell-mot">${m.mot}</div>
       <div class="cell cell-ipa">${m.ipa||''}</div>
@@ -1011,6 +1015,8 @@ function mgShowWordList(sub) {
       <div class="cell"><span class="badge-nivel badge-${m.niveau}">${m.niveau}</span></div>
       <div class="cell"><span class="badge-reg badge-${m.registre}">${REG_LABELS[m.registre]||m.registre}</span></div>
     </div>`).join('');
+    html+=`</div>`;
+    rows.innerHTML=html;
 }
 
 function mgClearSelection() {
