@@ -140,6 +140,43 @@ h1{font-family:'Playfair Display',serif;font-size:clamp(22px,4vw,34px);font-weig
 .valid-ok{background:rgba(30,102,65,.2);color:#5EC48A;border:1px solid rgba(46,153,96,.3)}
 .valid-err{background:rgba(139,31,31,.2);color:#E07070;border:1px solid rgba(192,57,43,.3)}
 
+
+/* MANAGE PANEL VISUAL */
+#manage-panel{display:none}
+.manage-layout{display:grid;grid-template-columns:340px 1fr;gap:24px}
+.manage-sidebar,.manage-main,.action-group,.manage-word-list,.sel-info{background:var(--ink2);border:1px solid var(--border2);border-radius:16px}
+.manage-sidebar{padding:18px}
+.manage-sidebar-header{font-family:'Playfair Display',sans-serif;color:var(--gold-light);margin-bottom:12px}
+.manage-main{padding:20px}
+.sel-info{font-family:'Playfair Display',sans-serif;padding:16px;margin-bottom:16px;background:linear-gradient(135deg,rgba(201,168,76,.08),transparent)}
+.sel-name{font-size:20px;font-weight:700;color:var(--gold-light)}
+.sel-meta{font-family:'DM Sans',sans-serif;color:var(--gray);font-size:12px}
+.action-groups{display:grid;gap:14px}
+.action-group{padding:16px}
+.action-group-title{color:var(--gold-light);font-weight:700;margin-bottom:10px}
+.action-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+.mg-input,.mg-select{background:var(--ink3);border:1px solid var(--border);color:var(--cream);padding:10px;border-radius:10px}
+.mg-btn{border:none;border-radius:10px;padding:10px 14px;cursor:pointer}
+.mg-btn-gold{background:var(--gold);color:var(--ink)}
+.mg-btn-red{background:var(--red);color:white}
+.mg-btn-gray{background:var(--ink3);color:var(--cream)}
+.mg-btn-blue{background:var(--green-light);color:white}
+.manage-word-list{margin-top:16px;padding:16px}
+.mwl-row{display:grid;grid-template-columns:140px 120px 1fr 60px;gap:10px;padding:8px;border-bottom:1px solid var(--border2);font-size: 12px;}
+.mwl-preview-row{display:block}
+
+.mg-modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9999;align-items:center;justify-content:center}
+.mg-modal-bg.show{display:flex}
+.mg-modal{width:min(560px,92vw);background:var(--ink2);border:1px solid var(--border);border-radius:16px;padding:22px;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.mg-modal-title{font-size:20px;font-weight:700;color:var(--gold-light);margin-bottom:12px}
+.mg-modal-body{line-height:1.6;color:var(--cream)}
+.mg-modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px}
+
+.mt-cat{font-size:15px;}
+.mt-cat.selected{font-size:16px;color:#78AAEC;}
+.mt-sub{font-size:12px;color:#F7F3EC;}
+.mt-sub.selected{font-size:13px;color:#78AAEC;}
+
 /* TOAST */
 .toast{position:fixed;bottom:22px;right:22px;background:var(--ink2);border:1px solid var(--border);border-radius:12px;padding:11px 18px;font-size:13px;color:var(--cream);display:flex;align-items:center;gap:9px;z-index:999;transform:translateY(80px);opacity:0;transition:all .3s cubic-bezier(.4,0,.2,1);box-shadow:0 8px 32px rgba(0,0,0,.5);max-width:320px}
 .toast.show{transform:translateY(0);opacity:1}.toast-icon{font-size:17px}
@@ -293,7 +330,7 @@ h1{font-family:'Playfair Display',serif;font-size:clamp(22px,4vw,34px);font-weig
 </div>
 
 <!-- CONFIRM MODAL -->
-<div class="mg-modal-bg" id="mg-modal">
+<div class="mg-modal-bg" id="mg-modal" aria-hidden="true">
   <div class="mg-modal">
     <div class="mg-modal-title" id="mg-modal-title">Confirmar</div>
     <div class="mg-modal-body" id="mg-modal-body"></div>
@@ -305,7 +342,7 @@ h1{font-family:'Playfair Display',serif;font-size:clamp(22px,4vw,34px);font-weig
 </div>
 
 <!-- GEN PANEL -->
-<div class="layout" id="gen-panel" style="display:none">
+<div class="layout" id="gen-panel">
   <aside class="sidebar">
     <div class="sidebar-section">
       <div class="sidebar-title">Filtros</div>
@@ -371,16 +408,6 @@ let selectedRegistres=new Set(REGISTRES);
 let selectedCats=new Set();
 
 // ── TAB SWITCHING ──────────────────────────────────────────
-function switchTab(tab){
-  const g=document.getElementById('gen-panel');
-  const m=document.getElementById('merge-panel');
-  document.getElementById('tab-gen').classList.toggle('active',tab==='gen');
-  document.getElementById('tab-merge').classList.toggle('active',tab==='merge');
-  g.style.display=tab==='gen'?'':'none';
-  m.style.display=tab==='merge'?'block':'none';
-  if(tab==='merge') updateMergeStatus();
-}
-
 // ── LOAD ──────────────────────────────────────────────────
 async function loadDB(){
   try{
@@ -831,7 +858,7 @@ function mgBuildTree() {
 
     catDiv.innerHTML=`
       <div class="mt-cat-hd${isOpen?' open':''}" onclick="mgClickCat('${cat.id}',this)">
-        <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px">${cat.nom}</span>
+        <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${cat.nom}</span>
         <span class="mt-cat-count">${wc}</span>
         <span class="chevron">▶</span>
       </div>
@@ -973,11 +1000,16 @@ function mgShowWordList(sub) {
   const rows=document.getElementById('mg-wl-rows');
   if(!sub.mots.length){rows.innerHTML='<div style="padding:16px;font-size:12px;color:var(--gray);text-align:center">Sin palabras</div>';return;}
   rows.innerHTML=sub.mots.map(m=>`
-    <div class="mwl-row">
-      <span class="mwl-mot">${m.mot}</span>
-      <span class="mwl-ipa">${m.ipa||''}</span>
-      <span class="mwl-tr">${(m.traductions||[]).join(', ')}</span>
-      <span class="nbadge nbadge-${m.niveau}">${m.niveau}</span>
+    <div class="preview-row">
+      <div class="cell cell-mot">${m.mot}</div>
+      <div class="cell cell-ipa">${m.ipa||''}</div>
+      <div class="cell cell-genre">${m.genre||'—'}</div>
+      <div class="cell">${m.autre_genre||'—'}</div>
+      <div class="cell">${(m.traductions||[]).join(', ')}</div>
+      <div class="cell">${(m.synonymes||[]).slice(0,3).join(', ')||'—'}</div>
+      <div class="cell" style="white-space:normal;font-size:11px;color:var(--gray2)">${m.exemple||''}</div>
+      <div class="cell"><span class="badge-nivel badge-${m.niveau}">${m.niveau}</span></div>
+      <div class="cell"><span class="badge-reg badge-${m.registre}">${REG_LABELS[m.registre]||m.registre}</span></div>
     </div>`).join('');
 }
 
@@ -1172,17 +1204,30 @@ function mgConfirmDelete() {
 
 // ── MODAL ─────────────────────────────────────────────────────
 let mgModalCb=null;
-function mgShowModal(title,body,cb) {
+function mgShowModal(title,body,cb){
+  const modal=document.getElementById('mg-modal');
   document.getElementById('mg-modal-title').textContent=title;
   document.getElementById('mg-modal-body').innerHTML=body;
-  mgModalCb=cb;
-  document.getElementById('mg-modal').classList.add('show');
-  document.getElementById('mg-modal-confirm').onclick=()=>{mgModalClose();mgModalCb&&mgModalCb();};
+  modal.classList.add('show');
+  modal.setAttribute('aria-hidden','false');
+  window.mgModalCb=cb||null;
+  document.getElementById('mg-modal-confirm').onclick=function(){
+    if(window.mgModalCb) window.mgModalCb();
+    mgModalClose();
+  };
 }
-function mgModalClose() { document.getElementById('mg-modal').classList.remove('show'); mgModalCb=null; }
-// Close on background click
-document.addEventListener('click',e=>{ if(e.target.id==='mg-modal') mgModalClose(); });
+function mgModalClose(){
+  const modal=document.getElementById('mg-modal');
+  modal.classList.remove('show');
+  modal.setAttribute('aria-hidden','true');
+  window.mgModalCb=null;
+}
+document.addEventListener('click',function(e){
+  if(e.target && e.target.id==='mg-modal') mgModalClose();
+});
 
+// ── BOOT ──────────────────────────────────────────────────
+loadDB();
 </script>
 </body>
 </html>
