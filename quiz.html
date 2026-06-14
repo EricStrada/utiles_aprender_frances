@@ -89,7 +89,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--cream);m
 /* word-display is a flex container so article + word sit side by side */
 .word-display{font-family:'Playfair Display',serif;font-size:clamp(24px,5.5vw,46px);font-weight:700;color:var(--white);line-height:1.15;margin-bottom:6px;min-height:56px;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:0 10px}
 .w-article{font-style:italic;color:var(--goldL);opacity:.75;font-family:'Playfair Display',serif}
-.w-word{}
 
 /* Example sentence */
 .word-example{font-size:12px;color:var(--gray2);font-style:italic;margin-top:9px;line-height:1.55;max-width:540px;margin-left:auto;margin-right:auto;padding:7px 13px;background:rgba(255,255,255,.03);border-radius:8px;border-left:2px solid var(--bord)}
@@ -595,7 +594,7 @@ function updateStats(){
 function getArticle(word, genre){
   if(!genre) return '';
   const g = genre.toLowerCase();
-  if(g==='pl.' || g.includes('pl')) return 'les';
+  if(g==='m.pl.' || g==='f.pl.') return 'les';
   const startsVowel = VOWEL_RE.test(word) && !H_ASPIRE.has(word.toLowerCase().split(' ')[0]);
   if(g.startsWith('m') && !g.includes('/')){
     return startsVowel ? "l'" : 'le';
@@ -604,7 +603,7 @@ function getArticle(word, genre){
     return startsVowel ? "l'" : 'la';
   }
   // m./f.
-  return startsVowel ? "l'" : 'le/la';
+  //return startsVowel ? "l'" : 'le/la';
 }
 
 function renderVocab(item){

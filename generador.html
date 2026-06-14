@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Générateur — Dictionnaire Français</title>
+<title>Générateur v10 — Dictionnaire Français</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -76,10 +76,13 @@ h1{font-family:'Playfair Display',serif;font-size:clamp(22px,4vw,34px);font-weig
 .export-btns{display:flex;gap:10px;flex-wrap:wrap}
 .btn{display:flex;align-items:center;gap:8px;padding:10px 18px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all var(--tr);white-space:nowrap}
 .btn:disabled{opacity:.4;cursor:default}
-.btn-excel{background:var(--gold);color:var(--ink)}
-.btn-excel:not(:disabled):hover{background:var(--gold-light);transform:translateY(-1px);box-shadow:0 4px 20px rgba(201,168,76,.3)}
-.btn-csv{background:var(--ink3);color:var(--cream);border:1px solid var(--border)}
+.btn-excel{background:var(--ink3);color:var(--gold);border:1px solid var(--border)}
+.btn-excel:not(:disabled):hover{border-color:var(--gold);color:var(--gold-light);transform:translateY(-1px)}
+.btn-csv{background:var(--ink3);color:var(--gold);border:1px solid var(--border)}
 .btn-csv:not(:disabled):hover{border-color:var(--gold);color:var(--gold-light);transform:translateY(-1px)}
+.btn-export-json{background:var(--ink3);color:var(--gold);border:1px solid var(--border)}
+.btn-export-json:not(:disabled):hover{border-color:var(--gold);color:var(--gold-light);transform:translateY(-1px)}
+.btn-export-json:disabled{opacity:.4;cursor:default}
 .btn-icon{font-size:16px}
 .progress-wrap{height:2px;background:var(--border2);border-radius:99px;margin-bottom:22px;overflow:hidden;opacity:0;transition:opacity .3s}
 .progress-wrap.visible{opacity:1}
@@ -100,15 +103,31 @@ h1{font-family:'Playfair Display',serif;font-size:clamp(22px,4vw,34px);font-weig
 .cell-mot{font-weight:600;color:var(--white)}
 .cell-ipa{font-family:'DM Mono',monospace;font-size:10px;color:var(--gold)}
 .cell-genre{font-size:11px;color:var(--gold-light)}
-.badge-nivel{display:inline-block;padding:2px 5px;border-radius:4px;font-size:10px;font-weight:700}
+.badge-nivel{display:inline-block;padding:2px 5px;border-radius:4px;font-size:12px;font-weight:700}
 .badge-A1{background:rgba(45,125,70,.2);color:#6BCB8B}.badge-A2{background:rgba(62,158,92,.2);color:#6BCB8B}
 .badge-B1{background:rgba(26,92,168,.2);color:#78AAEC}.badge-B2{background:rgba(41,121,208,.2);color:#78AAEC}
 .badge-C1{background:rgba(123,63,160,.2);color:#C084E8}.badge-C2{background:rgba(156,82,199,.2);color:#C084E8}
-.badge-reg{display:inline-block;padding:2px 5px;border-radius:4px;font-size:10px;font-weight:500}
+.badge-reg{display:inline-block;padding:2px 5px;border-radius:4px;font-size:12px;font-weight:500}
 .badge-standard{background:rgba(74,85,104,.3);color:var(--gray2)}.badge-familier{background:rgba(192,86,33,.2);color:#F6A87A}
 .badge-soutenu{background:rgba(43,108,176,.2);color:#90CDF4}.badge-technique{background:rgba(112,36,89,.2);color:#D6A4C4}
 .empty-state{padding:56px 20px;text-align:center;color:var(--gray)}
 .empty-state-icon{font-size:38px;margin-bottom:10px}.empty-state-text{font-size:14px}
+
+/* ── EDICIÓN PALABRAS ───────────────────────────────────────── */
+.btn-words-edit{display:flex;align-items:center;gap:6px;padding:8px 16px;background:var(--ink3);border:1px solid var(--border2);border-radius:9px;color:var(--cream);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;white-space:nowrap}
+.btn-words-edit:hover,.btn-words-edit.active{background:rgba(201,168,76,.15);border-color:var(--gold);color:var(--gold-light)}
+.btn-words-save{display:none;align-items:center;gap:6px;padding:8px 16px;background:var(--gold);border:none;border-radius:9px;color:var(--ink);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap}
+.btn-words-save:hover{background:var(--gold-light);transform:translateY(-1px)}
+.preview-row.editing{background:rgba(201,168,76,.04);}
+.preview-row.editing:hover{background:rgba(201,168,76,.07);}
+.col-header-row.editing{grid-template-columns:170px 100px 58px 68px 150px 150px 1fr 80px 100px}
+.preview-row.editing{grid-template-columns:170px 100px 58px 68px 150px 150px 1fr 80px 100px}
+.cell-input{background:var(--ink3);border:1px solid var(--border2);border-radius:5px;color:var(--cream);font-family:'DM Mono',monospace;font-size:11px;padding:2px 6px;width:100%;outline:none;transition:border-color .15s;min-width:0}
+.cell-input:focus{border-color:var(--gold)}
+.cell-select{background:var(--ink3);border:1px solid var(--border2);border-radius:5px;color:var(--cream);font-family:'DM Sans',sans-serif;font-size:11px;padding:2px 4px;width:100%;outline:none;transition:border-color .15s;cursor:pointer}
+.cell-select:focus{border-color:var(--gold)}
+.edit-mode-banner{display:none;align-items:center;gap:10px;padding:7px 18px;background:rgba(201,168,76,.1);border-bottom:1px solid rgba(201,168,76,.25);font-size:12px;color:var(--gold-light)}
+.edit-mode-banner.show{display:flex}
 
 /* MERGE PANEL */
 #merge-panel{display:none;padding:30px 38px}
@@ -133,9 +152,6 @@ h1{font-family:'Playfair Display',serif;font-size:clamp(22px,4vw,34px);font-weig
 .db-stat-pill{background:var(--ink2);border:1px solid var(--border2);border-radius:99px;padding:2px 9px;font-size:11px;color:var(--gray)}
 .db-stat-pill strong{color:var(--gold-light);font-weight:600}
 .merge-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
-.btn-export-json{background:var(--ink3);color:var(--gold-light);border:1px solid var(--border);border-radius:10px;padding:9px 18px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:7px;transition:all .2s}
-.btn-export-json:hover:not(:disabled){background:rgba(201,168,76,.1);border-color:var(--gold);transform:translateY(-1px)}
-.btn-export-json:disabled{opacity:.4;cursor:default}
 .valid-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:600;margin-top:7px}
 .valid-ok{background:rgba(30,102,65,.2);color:#5EC48A;border:1px solid rgba(46,153,96,.3)}
 .valid-err{background:rgba(139,31,31,.2);color:#E07070;border:1px solid rgba(192,57,43,.3)}
@@ -190,6 +206,88 @@ h1{font-family:'Playfair Display',serif;font-size:clamp(22px,4vw,34px);font-weig
   .tab-nav{padding:0 18px}
   .merge-layout{grid-template-columns:1fr}
 }
+
+/* ── ORDENAR CATEGORÍAS / SUBS ─────────────────────────────── */
+.mt-cat-hd{display:flex;align-items:center;gap:6px;padding:8px 10px;border-radius:8px;cursor:pointer;transition:background var(--tr)}
+.mt-cat-hd:hover{background:rgba(255,255,255,.05)}
+.mt-cat-hd.open .chevron{transform:rotate(90deg)}
+.chevron{transition:transform .2s;font-size:10px;color:var(--gray);flex-shrink:0}
+.mt-cat-count,.mt-sub-count{font-size:10px;color:var(--gray);background:rgba(255,255,255,.05);padding:1px 6px;border-radius:99px;flex-shrink:0}
+.mt-subs{display:none;padding-left:14px}
+.mt-subs.open{display:block}
+.mt-sub{display:flex;align-items:center;gap:6px;padding:6px 10px;border-radius:7px;cursor:pointer;font-size:12px;color:var(--gray2);transition:background var(--tr)}
+.mt-sub:hover{background:rgba(255,255,255,.04);color:var(--cream)}
+.mt-sub.selected{color:var(--gold-light);background:rgba(201,168,76,.1)}
+
+.sort-btns{display:flex;flex-direction:column;gap:1px;flex-shrink:0;opacity:0;transition:opacity .15s}
+.mt-cat-hd:hover .sort-btns,.mt-sub:hover .sort-btns{opacity:1}
+.sort-btn{background:rgba(255,255,255,.08);border:none;color:var(--gray2);width:16px;height:14px;border-radius:3px;cursor:pointer;font-size:9px;line-height:1;display:flex;align-items:center;justify-content:center;padding:0;transition:background .15s}
+.sort-btn:hover{background:rgba(201,168,76,.3);color:var(--gold-light)}
+
+/* ── PESTAÑA VERBOS ─────────────────────────────────────────── */
+#verbs-panel{display:none;height:calc(100vh - 130px);overflow:hidden}
+
+/* ── VISTA LISTA ── */
+#verbs-list-view{display:flex;flex-direction:column;height:100%;padding:28px 38px}
+.verbs-top-bar{display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap}
+.verbs-top-bar h2{font-family:'Playfair Display',serif;font-size:19px;color:var(--gold-light);flex:1}
+.verbs-search-input{background:var(--ink2);border:1px solid var(--border);color:var(--cream);padding:9px 16px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:13px;min-width:220px;outline:none;transition:border-color .2s}
+.verbs-search-input:focus{border-color:var(--gold)}
+.verbs-count{font-size:12px;color:var(--gray);white-space:nowrap}
+.verbs-alpha-list{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:0}
+.verbs-alpha-list::-webkit-scrollbar{width:4px}
+.verbs-alpha-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px}
+.verb-alpha-group{margin-bottom:4px;background:var(--ink2);border:1px solid var(--border2);border-radius:16px}
+.verb-alpha-letter{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--gold);padding:8px 14px 4px;display:block}
+.verb-list-item{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:9px;cursor:pointer;transition:background var(--tr);border:1px solid transparent}
+.verb-list-group{background:var(--ink3);border-bottom-right-radius: 16px;border-bottom-left-radius: 16px}
+.verb-list-item:hover{background:rgba(255,255,255,.04);border-color:var(--border2)}
+.vli-inf{font-family:'Playfair Display',serif;font-size:12px;color:var(--gold-light);min-width:160px}
+.vli-trad{font-size:12px;color:var(--cream);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vli-tags{display:flex;gap:5px;flex-shrink:0}
+.vli-tag{font-size:12px;color:var(--cream);background:var(--ink3);padding:2px 7px;border-radius:99px;border:1px solid var(--border2)}
+.vli-arrow{color:var(--gray);font-size:12px;flex-shrink:0;transition:color .15s}
+.verb-list-item:hover .vli-arrow{color:var(--gold)}
+.verbs-empty{padding:56px 20px;text-align:center;color:var(--gray)}
+.verbs-empty-icon{font-size:36px;margin-bottom:10px}
+
+/* ── VISTA DETALLE ── */
+#verbs-detail-view{display:none;height:100%;flex-direction:column;overflow:hidden}
+.verb-detail-topbar{display:flex;align-items:center;gap:12px;padding:16px 38px;background:var(--ink2);border-bottom:1px solid var(--border2);flex-shrink:0;flex-wrap:wrap}
+.btn-back{display:flex;align-items:center;gap:6px;padding:7px 14px;background:var(--ink3);border:1px solid var(--border2);border-radius:8px;color:var(--cream);font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;transition:all .15s;white-space:nowrap}
+.btn-back:hover{border-color:var(--gold);color:var(--gold)}
+.verb-detail-inf{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--gold-light)}
+.verb-detail-inf-ipa{font-family:'DM Mono',monospace;font-size:14px;color:var(--gold);padding-top: 6px}
+.verb-detail-meta{display:flex;gap:8px;flex:1;align-items:center}
+.vd-tag{font-size:12px;color:var(--cream);background:var(--ink3);padding:3px 9px;border-radius:99px;border:1px solid var(--border2)}
+.vd-aux{font-size:12px;color:var(--cream);background:var(--ink3);padding:3px 9px;border-radius:99px;border:1px solid var(--border2)}
+.vd-trad{font-size:13px;color:var(--cream)}
+.verb-detail-actions{display:flex;gap:8px;flex-shrink:0}
+.btn-edit-toggle{display:flex;align-items:center;gap:6px;padding:8px 16px;background:var(--ink3);border:1px solid var(--border2);border-radius:9px;color:var(--cream);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:all .2s}
+.btn-edit-toggle:hover,.btn-edit-toggle.active{background:rgba(201,168,76,.15);border-color:var(--gold);color:var(--gold-light)}
+.btn-save-conj{display:flex;align-items:center;gap:6px;padding:8px 16px;background:var(--gold);border:none;border-radius:9px;color:var(--ink);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;display:none}
+.btn-save-conj:hover{background:var(--gold-light);transform:translateY(-1px)}
+.verb-detail-body{flex:1;overflow-y:auto;padding:24px 38px}
+.verb-detail-body::-webkit-scrollbar{width:4px}
+.verb-detail-body::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px}
+.conj-grid{display:grid;grid-template-columns: minmax(300px,1fr) minmax(300px,1fr);;gap:14px}
+.conj-tense{background:var(--ink2);border:1px solid var(--border2);border-radius:12px;padding:14px 16px;transition:border-color .2s}
+.conj-tense.editing{border-color:rgba(201,168,76,.4)}
+.conj-tense-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--gold);margin-bottom:10px}
+.conj-row{display:flex;gap:8px;font-size:12px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.04);align-items:center}
+.conj-row:last-child{border-bottom:none}
+.conj-pron{color:var(--gray);min-width:50px;font-size:11px;flex-shrink:0}
+.conj-form{color:var(--cream);flex-shrink:0}
+.conj-ipa{color:var(--gold);flex:1}
+.conj-input{background:var(--ink3);border:1px solid var(--border2);border-radius:5px;color:var(--cream);font-family:'DM Mono',monospace;font-size:12px;padding:2px 7px;width:100%;outline:none;transition:border-color .15s}
+.conj-input:focus{border-color:var(--gold)}
+.conj-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.btn-verb-nav{display:flex;align-items:center;gap:5px;padding:6px 12px;background:var(--ink3);border:1px solid var(--border2);border-radius:7px;color:var(--gray2);font-family:'DM Sans',sans-serif;font-size:11px;cursor:pointer;transition:all .15s}
+.btn-verb-nav:hover:not(:disabled){border-color:var(--gold);color:var(--gold)}
+.btn-verb-nav:disabled{opacity:.3;cursor:default}
+.verb-nav-label{font-size:12px;color:var(--gray);font-family:'Playfair Display',serif}
+.conj-section-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--gray);margin:20px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--border2);grid-column:1/-1}
+
 </style>
 </head>
 <body>
@@ -208,25 +306,26 @@ h1{font-family:'Playfair Display',serif;font-size:clamp(22px,4vw,34px);font-weig
 </header>
 
 <nav class="tab-nav">
-  <button class="tab-nav-btn active" id="tab-gen" onclick="switchTab('gen')">📊 Generar / Exportar</button>
-  <button class="tab-nav-btn" id="tab-merge" onclick="switchTab('merge')">🔀 Ampliar base de datos</button>
-  <button class="tab-nav-btn" id="tab-manage" onclick="switchTab('manage')">🗂️ Gestionar BD</button>
+  <button class="tab-nav-btn active" id="tab-gen" onclick="switchTab('gen')">🔤 Palabras</button>
+  <button class="tab-nav-btn" id="tab-verbs" onclick="switchTab('verbs')">💬 Verbos</button>
+  <button class="tab-nav-btn" id="tab-merge" onclick="switchTab('merge')">📚 Ampliar BD</button>
+  <button class="tab-nav-btn" id="tab-manage" onclick="switchTab('manage')">🗂️ Estructura</button>
 </nav>
 
 <!-- MERGE PANEL -->
 <div id="merge-panel" style="padding:30px 38px">
   <div class="merge-layout">
     <div class="merge-box">
-      <div class="merge-box-title">📚 Base de datos activa</div>
+      <div class="merge-box-title">Base de datos activa</div>
       <div class="merge-box-sub">Estado del diccionario en memoria. Exporta como JSON, Excel o CSV en cualquier momento.</div>
       <div class="db-status-card">
         <div class="db-name" id="merge-db-name">Sin base de datos cargada</div>
         <div class="db-stats" id="merge-db-stats"></div>
       </div>
       <div class="merge-actions">
-        <button class="btn-export-json" id="btn-export-json" onclick="exportJSON()" disabled>💾 Exportar JSON</button>
-        <button class="btn btn-excel" style="padding:9px 14px;font-size:12px" id="merge-btn-excel" onclick="exportExcel()" disabled>📊 Excel</button>
-        <button class="btn btn-csv" style="padding:9px 14px;font-size:12px" id="merge-btn-csv" onclick="exportCSV()" disabled>📄 CSV</button>
+        <button class="btn btn-export-json" style="padding:9px 14px;font-size:12px" id="btn-export-json" onclick="exportJSON()" disabled>💾 Exportar JSON</button>
+        <button class="btn btn-excel" style="padding:9px 14px;font-size:12px" id="merge-btn-excel" onclick="exportExcel()" disabled>📊 Exportar Excel</button>
+        <button class="btn btn-csv" style="padding:9px 14px;font-size:12px" id="merge-btn-csv" onclick="exportCSV()" disabled>📄 Exportar CSV</button>
       </div>
     </div>
     <div class="merge-box">
@@ -370,6 +469,11 @@ h1{font-family:'Playfair Display',serif;font-size:clamp(22px,4vw,34px);font-weig
         <div class="preview-meta" id="preview-meta">Cargando…</div>
       </div>
       <div class="export-btns">
+        <button class="btn-words-edit" id="btn-words-edit" onclick="wordsToggleEdit()">✏️ Editar</button>
+        <button class="btn-words-save" id="btn-words-save" onclick="wordsSaveEdit()">💾 Guardar cambios</button>
+        <button class="btn-export-json btn" id="btn-json-preview" onclick="exportJSONPreview()" disabled style="padding:10px 18px">
+          <span class="btn-icon">💾</span> Exportar JSON
+        </button>
         <button class="btn btn-excel" id="btn-excel" onclick="exportExcel()" disabled>
           <span class="btn-icon">📊</span> Exportar Excel
         </button>
@@ -377,6 +481,9 @@ h1{font-family:'Playfair Display',serif;font-size:clamp(22px,4vw,34px);font-weig
           <span class="btn-icon">📄</span> Exportar CSV
         </button>
       </div>
+    </div>
+    <div class="edit-mode-banner" id="edit-mode-banner">
+      ✏️ <strong>Modo edición activo</strong> — Modifica los campos directamente en la tabla. Los botones de exportar están desactivados hasta guardar.
     </div>
     <div class="progress-wrap" id="progress-wrap">
       <div class="progress-bar" id="progress-bar" style="width:0%"></div>
@@ -388,6 +495,46 @@ h1{font-family:'Playfair Display',serif;font-size:clamp(22px,4vw,34px);font-weig
       </div>
     </div>
   </main>
+</div>
+
+
+<!-- VERBS PANEL -->
+<div id="verbs-panel">
+
+  <!-- ── LISTA ── -->
+  <div id="verbs-list-view">
+    <div class="verbs-top-bar">
+      <h2>Verbos</h2>
+      <input class="verbs-search-input" id="verbs-search" placeholder="🔍 Chercher verbe…" oninput="verbsFilter()">
+      <span class="verbs-count" id="verbs-count"></span>
+    </div>
+    <div class="verbs-alpha-list" id="verbs-alpha-list">
+      <div class="verbs-empty"><div class="verbs-empty-icon">⏳</div><div>Sin datos de verbos</div></div>
+    </div>
+  </div>
+
+  <!-- ── DETALLE ── -->
+  <div id="verbs-detail-view">
+    <div class="verb-detail-topbar">
+      <button class="btn-back" onclick="verbsBack()">← Volver a la lista</button>
+      <span class="verb-detail-inf" id="vd-inf"></span>
+      <span class="verb-detail-inf-ipa" id="vd-inf-ipa"></span>
+      <div class="verb-detail-meta" id="vd-meta"></div>
+      <div class="verb-detail-actions">
+        <button class="btn-edit-toggle" id="btn-edit-toggle" onclick="verbsToggleEdit()">✏️ Editar</button>
+        <button class="btn-save-conj" id="btn-save-conj" onclick="verbsSaveEdit()">💾 Guardar cambios</button>
+      </div>
+    </div>
+    <div class="verb-detail-body">
+      <div class="conj-nav">
+        <button class="btn-verb-nav" id="btn-prev-verb" onclick="verbsNavigate(-1)">◀ Anterior</button>
+        <span class="verb-nav-label" id="vd-nav-label"></span>
+        <button class="btn-verb-nav" id="btn-next-verb" onclick="verbsNavigate(1)">Siguiente ▶</button>
+      </div>
+      <div class="conj-grid" id="vd-conj-grid"></div>
+    </div>
+  </div>
+
 </div>
 
 <div class="toast" id="toast">
@@ -529,6 +676,11 @@ function getFilteredData(){
 }
 
 function refreshAll(){
+  // If editing, exit edit mode silently when filters change (avoids stale data-mot refs)
+  if(wordsEditMode) {
+    wordsEditMode = false;
+    wordsApplyEditUI();
+  }
   DB.categories.forEach(cat=>{
     const btn=document.querySelector(`.cat-btn[data-id="${cat.id}"]`);
     if(btn) btn.querySelector('.cat-count').textContent=getFilteredWords(cat).length;
@@ -548,28 +700,50 @@ function renderPreview(){
   const has=tw>0;
   document.getElementById('btn-excel').disabled=!has;
   document.getElementById('btn-csv').disabled=!has;
+  const jsonBtn=document.getElementById('btn-json-preview');
+  if(jsonBtn) jsonBtn.disabled=!has;
   const wrap=document.getElementById('preview-table');
   if(!has){wrap.innerHTML=`<div class="empty-state"><div class="empty-state-icon">🔍</div><div class="empty-state-text">No hay palabras con los filtros actuales.</div></div>`;return;}
-  const COLS=['Palabra (fr)','IPA','Género','Otro gén.','Traducción(es)','Sinónimos','Ejemplo','Niv.','Registre'];
+  const COLS_VIEW=['Palabra (fr)','IPA','Género','Otro gén.','Traducción(es)','Sinónimos','Ejemplo','Niv.','Registre'];
+  const COLS_EDIT=['Palabra (fr)','IPA','Género','Otro gén.','Traducción(es)','Sinónimos','Ejemplo','Nivel','Registre'];
+  const COLS = wordsEditMode ? COLS_EDIT : COLS_VIEW;
   let html='';
   data.forEach(cat=>{
     const ct=cat.subcategories.reduce((a,s)=>a+s.mots.length,0);
     html+=`<div class="preview-cat"><div class="preview-cat-header"><span class="preview-cat-name">${cat.nom}</span><span class="preview-cat-count">${ct} palabras</span></div>`;
     cat.subcategories.forEach(sub=>{
       html+=`<div class="preview-sub"><div class="preview-sub-header"><span class="preview-sub-name">› ${sub.nom}</span></div>
-        <div class="col-header-row">${COLS.map(l=>`<div class="col-h">${l}</div>`).join('')}</div>`;
+        <div class="col-header-row${wordsEditMode?' editing':''}">${COLS.map(l=>`<div class="col-h">${l}</div>`).join('')}</div>`;
       sub.mots.forEach(m=>{
-        html+=`<div class="preview-row">
-          <div class="cell cell-mot">${m.mot}</div>
-          <div class="cell cell-ipa">${m.ipa||''}</div>
-          <div class="cell cell-genre">${m.genre||'—'}</div>
-          <div class="cell">${m.autre_genre||'—'}</div>
-          <div class="cell">${(m.traductions||[]).join(', ')}</div>
-          <div class="cell">${(m.synonymes||[]).slice(0,3).join(', ')||'—'}</div>
-          <div class="cell" style="white-space:normal;font-size:11px;color:var(--gray2)">${m.exemple||''}</div>
-          <div class="cell"><span class="badge-nivel badge-${m.niveau}">${m.niveau}</span></div>
-          <div class="cell"><span class="badge-reg badge-${m.registre}">${REG_LABELS[m.registre]||m.registre}</span></div>
-        </div>`;
+        const motEsc = m.mot.replace(/"/g,'&quot;');
+        if(wordsEditMode) {
+          const genreOpts = ['m.', 'f.', 'm.pl.', 'f.pl.'].map(n=>`<option value="${n}"${m.genre===n?' selected':''}>${n}</option>`).join('');
+          const niveauOpts = ['A1','A2','B1','B2','C1','C2'].map(n=>`<option value="${n}"${m.niveau===n?' selected':''}>${n}</option>`).join('');
+          const regOpts = REGISTRES.map(r=>`<option value="${r}"${m.registre===r?' selected':''}>${REG_LABELS[r]}</option>`).join('');
+          html+=`<div class="preview-row editing" data-cat-id="${cat.id}" data-sub-id="${sub.id}" data-mot="${motEsc}">
+            <div class="cell"><input class="cell-input cell-mot" data-field="mot" value="${motEsc}" style="font-weight:600;color:var(--white)"></div>
+            <div class="cell"><input class="cell-input cell-ipa" data-field="ipa" value="${(m.ipa||'').replace(/"/g,'&quot;')}" style="font-family:'DM Mono',monospace;color:var(--gold)"></div>
+            <div class="cell"><select class="cell-select" data-field="genre" style="max-width:50px;color:var(--gold-light)">${genreOpts}</select></div>
+            <div class="cell"><input class="cell-input" data-field="autre_genre" value="${(m.autre_genre||'').replace(/"/g,'&quot;')}" style="max-width:60px"></div>
+            <div class="cell"><input class="cell-input" data-field="traductions" value="${(m.traductions||[]).join(', ').replace(/"/g,'&quot;')}" title="Separar con comas"></div>
+            <div class="cell"><input class="cell-input" data-field="synonymes" value="${(m.synonymes||[]).join(', ').replace(/"/g,'&quot;')}" title="Separar con comas"></div>
+            <div class="cell"><input class="cell-input" data-field="exemple" value="${(m.exemple||'').replace(/"/g,'&quot;')}" style="font-size:11px;color:var(--gray2)"></div>
+            <div class="cell"><select class="cell-select" data-field="niveau">${niveauOpts}</select></div>
+            <div class="cell"><select class="cell-select" data-field="registre">${regOpts}</select></div>
+          </div>`;
+        } else {
+          html+=`<div class="preview-row">
+            <div class="cell cell-mot">${m.mot}</div>
+            <div class="cell cell-ipa">${m.ipa||''}</div>
+            <div class="cell cell-genre">${m.genre||'—'}</div>
+            <div class="cell">${m.autre_genre||'—'}</div>
+            <div class="cell">${(m.traductions||[]).join(', ')}</div>
+            <div class="cell">${(m.synonymes||[]).slice(0,3).join(', ')||'—'}</div>
+            <div class="cell" style="white-space:normal;font-size:11px;color:var(--gray2)">${m.exemple||''}</div>
+            <div class="cell"><span class="badge-nivel badge-${m.niveau}">${m.niveau}</span></div>
+            <div class="cell"><span class="badge-reg badge-${m.registre}">${REG_LABELS[m.registre]||m.registre}</span></div>
+          </div>`;
+        }
       });
       html+=`</div>`;
     });
@@ -685,7 +859,24 @@ function updateMergeStatus(){
   st.innerHTML=`<span class="db-stat-pill"><strong>${w}</strong> palabras</span><span class="db-stat-pill"><strong>${c}</strong> categorías</span><span class="db-stat-pill"><strong>${s}</strong> subcategorías</span><span class="db-stat-pill"><strong>${v}</strong> verbos</span>`;
 }
 
-// ── JSON EXPORT ───────────────────────────────────────────
+
+// ── JSON EXPORT PREVIEW ───────────────────────────────────────
+function exportJSONPreview(){
+  if(!DB) return;
+  const filtered=getFilteredData();
+  if(!filtered.length){showToast('✗','No hay datos en la vista previa',true);return;}
+  const totalWords=filtered.reduce((a,c)=>a+c.subcategories.reduce((b,s)=>b+s.mots.length,0),0);
+  const exportObj={
+    meta:{...(DB.meta||{}),exported_preview:true,export_date:new Date().toISOString()},
+    categories:filtered
+  };
+  const blob=new Blob([JSON.stringify(exportObj,null,2)],{type:'application/json;charset=utf-8'});
+  const a=Object.assign(document.createElement('a'),{href:URL.createObjectURL(blob),download:'dictionnaire_preview.json'});
+  a.click(); URL.revokeObjectURL(a.href);
+  showToast('💾',`JSON exportado: ${totalWords} palabras (vista previa)`);
+}
+
+// ── JSON EXPORT (BD completa desde Ampliar BD) ───────────────
 function exportJSON(){
   if(!DB) return;
   const blob=new Blob([JSON.stringify(DB,null,2)],{type:'application/json;charset=utf-8'});
@@ -817,14 +1008,16 @@ function showMergeLog(entries) {
 let mgSel = null;
 
 function switchTab(tab) {
-  ['gen','merge','manage'].forEach(t => {
-    document.getElementById(t+'-panel').style.display = t===tab ? (t==='gen'?'':'block') : 'none';
-    document.getElementById('tab-'+t).classList.toggle('active', t===tab);
+  ['gen','merge','manage','verbs'].forEach(t => {
+    const panel = document.getElementById(t+'-panel');
+    if(panel) panel.style.display = t===tab ? (t==='gen'?'':'block') : 'none';
+    const btn = document.getElementById('tab-'+t);
+    if(btn) btn.classList.toggle('active', t===tab);
   });
-  // override gen-panel display (grid)
   if(tab==='gen') document.getElementById('gen-panel').style.display='';
   if(tab==='merge') updateMergeStatus();
   if(tab==='manage') mgRefresh();
+  if(tab==='verbs') verbsRender();
 }
 
 function mgRefresh() {
@@ -846,34 +1039,76 @@ function mgUpdateTreeCount() {
 function mgBuildTree() {
   const tree=document.getElementById('mg-tree');
   tree.innerHTML='';
-  (DB.categories||[]).forEach(cat=>{
+  (DB.categories||[]).forEach((cat,catIdx)=>{
     const wc=cat.subcategories.reduce((a,s)=>a+s.mots.length,0);
     const isSelCat = mgSel && mgSel.type==='cat' && mgSel.catId===cat.id;
     const hasSelSub = mgSel && mgSel.type==='sub' && mgSel.catId===cat.id;
     const isOpen = isSelCat || hasSelSub;
+    const totalCats = DB.categories.length;
 
     const catDiv=document.createElement('div');
     catDiv.className='mt-cat'+(isSelCat?' selected':'');
     catDiv.id='mg-cat-'+cat.id;
 
+    const subItems=cat.subcategories.map((sub,subIdx)=>{
+      const isSelSub=mgSel&&mgSel.type==='sub'&&mgSel.catId===cat.id&&mgSel.subId===sub.id;
+      const totalSubs=cat.subcategories.length;
+      return `<div class="mt-sub${isSelSub?' selected':''}" id="mg-sub-${cat.id}-${sub.id}"
+          onclick="mgClickSub('${cat.id}','${sub.id}')">
+          <div class="sort-btns" onclick="event.stopPropagation()">
+            <button class="sort-btn" title="Subir subcategoría" ${subIdx===0?'disabled style="opacity:.3"':''} onclick="mgMoveSortSub('${cat.id}','${sub.id}',-1)">▲</button>
+            <button class="sort-btn" title="Bajar subcategoría" ${subIdx===totalSubs-1?'disabled style="opacity:.3"':''} onclick="mgMoveSortSub('${cat.id}','${sub.id}',1)">▼</button>
+          </div>
+          <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${sub.nom}</span>
+          <span class="mt-sub-count">${sub.mots.length}</span>
+        </div>`;
+    }).join('');
+
     catDiv.innerHTML=`
       <div class="mt-cat-hd${isOpen?' open':''}" onclick="mgClickCat('${cat.id}',this)">
+        <div class="sort-btns" onclick="event.stopPropagation()">
+          <button class="sort-btn" title="Subir categoría" ${catIdx===0?'disabled style="opacity:.3"':''} onclick="mgMoveSortCat('${cat.id}',-1)">▲</button>
+          <button class="sort-btn" title="Bajar categoría" ${catIdx===totalCats-1?'disabled style="opacity:.3"':''} onclick="mgMoveSortCat('${cat.id}',1)">▼</button>
+        </div>
         <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${cat.nom}</span>
         <span class="mt-cat-count">${wc}</span>
         <span class="chevron">▶</span>
       </div>
       <div class="mt-subs${isOpen?' open':''}" id="mg-subs-${cat.id}">
-        ${cat.subcategories.map(sub=>{
-          const isSelSub=mgSel&&mgSel.type==='sub'&&mgSel.catId===cat.id&&mgSel.subId===sub.id;
-          return `<div class="mt-sub${isSelSub?' selected':''}" id="mg-sub-${cat.id}-${sub.id}"
-            onclick="mgClickSub('${cat.id}','${sub.id}')">
-            <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${sub.nom}</span>
-            <span class="mt-sub-count">${sub.mots.length}</span>
-          </div>`;
-        }).join('')}
+        ${subItems}
       </div>`;
     tree.appendChild(catDiv);
   });
+}
+
+// Mover categoría arriba/abajo
+function mgMoveSortCat(catId, dir) {
+  if(!DB) return;
+  const idx = DB.categories.findIndex(c=>c.id===catId);
+  if(idx<0) return;
+  const newIdx = idx+dir;
+  if(newIdx<0||newIdx>=DB.categories.length) return;
+  const tmp = DB.categories[idx];
+  DB.categories[idx] = DB.categories[newIdx];
+  DB.categories[newIdx] = tmp;
+  mgRefresh(); initUI();
+  showToast('↕️', `Categoría "${tmp.nom}" movida ${dir<0?'arriba':'abajo'}`);
+}
+
+// Mover subcategoría arriba/abajo dentro de su categoría
+function mgMoveSortSub(catId, subId, dir) {
+  if(!DB) return;
+  const cat = DB.categories.find(c=>c.id===catId);
+  if(!cat) return;
+  const idx = cat.subcategories.findIndex(s=>s.id===subId);
+  if(idx<0) return;
+  const newIdx = idx+dir;
+  if(newIdx<0||newIdx>=cat.subcategories.length) return;
+  const tmp = cat.subcategories[idx];
+  cat.subcategories[idx] = cat.subcategories[newIdx];
+  cat.subcategories[newIdx] = tmp;
+  mgRefresh(); initUI();
+  showToast('↕️', `Subcategoría "${tmp.nom}" movida ${dir<0?'arriba':'abajo'}`);
 }
 
 function mgClickCat(catId, hd) {
@@ -1231,6 +1466,416 @@ function mgModalClose(){
 document.addEventListener('click',function(e){
   if(e.target && e.target.id==='mg-modal') mgModalClose();
 });
+
+
+// ════════════════════════════════════════════════════════════════
+// VERBOS
+// ════════════════════════════════════════════════════════════════
+const PRONOUNS     = ['je','tu','il/elle/on','nous','vous','ils/elles'];
+const PRONOUNS_IMP = ['tu','nous','vous'];
+const PRONOUNS_PAR = ['ms','fs','mp','fp'];
+const PRONOUNS_PAR_LABELS = {
+  'ms':'masc. sin.','fs':'fém. sin.',
+  'mp':'masc. plu.','fp':'fém. plu.'
+};
+const PRONOUNS_SIN = ['unique'];   // participe présent, gérondif → una sola forma
+const PRONOUNS_GEP = ['base'];
+
+const TENSE_PRONOUNS = {
+  "indicatif_présent"           : PRONOUNS,
+  "indicatif_imparfait"         : PRONOUNS,
+  "indicatif_futur_simple"      : PRONOUNS,
+  "indicatif_passé_composé"     : PRONOUNS,
+  "subjonctif_présent"          : PRONOUNS,
+  "conditionnel_présent"        : PRONOUNS,
+  "indicatif_passé_simple"      : PRONOUNS,
+  "indicatif_plus_que_parfait"  : PRONOUNS,
+  "indicatif_futur_antérieur"   : PRONOUNS,
+  "conditionnel_passé"          : PRONOUNS,
+  "subjonctif_imparfait"        : PRONOUNS,
+  "indicatif_passé_antérieur"   : PRONOUNS,
+  "subjonctif_passé"            : PRONOUNS,
+  "subjonctif_plus_que_parfait" : PRONOUNS,
+  "impératif_présent"           : PRONOUNS_IMP,
+  "participe_présent"           : PRONOUNS_SIN,
+  "participe_passé"             : PRONOUNS_PAR,
+  "gérondif_passé"              : PRONOUNS_GEP,
+  "gérondif_présent"            : PRONOUNS_SIN
+};
+
+const TENSE_LABELS = {
+  "indicatif_présent"           : 'Présent',
+  "indicatif_imparfait"         : 'Imparfait',
+  "indicatif_futur_simple"      : 'Futur simple',
+  "indicatif_passé_composé"     : 'Passé composé',
+  "subjonctif_présent"          : 'Subj. présent',
+  "conditionnel_présent"        : 'Cond. présent',
+  "indicatif_passé_simple"      : 'Passé simple',
+  "indicatif_plus_que_parfait"  : 'Plus-que-parfait',
+  "indicatif_futur_antérieur"   : 'Futur antérieur',
+  "impératif_présent"           : 'Impératif',
+  "participe_présent"           : 'Part. présent',
+  "participe_passé"             : 'Part. passé',
+  "gérondif_passé"              : 'Gér. passé',
+  "gérondif_présent"            : 'Gér. présent',
+  "conditionnel_passé"          : 'Cond. passé',
+  "subjonctif_imparfait"        : 'Subj. imparfait',
+  "indicatif_passé_antérieur"   : 'Passé antérieur',
+  "subjonctif_passé"            : 'Subj. passé',
+  "subjonctif_plus_que_parfait" : 'Subj. plus-que-parfait'
+};
+
+const TENSE_ORDER = [
+  "indicatif_présent","indicatif_passé_composé",
+  "indicatif_imparfait","indicatif_plus_que_parfait",
+  "indicatif_passé_simple","indicatif_passé_antérieur",
+  "indicatif_futur_simple","indicatif_futur_antérieur",
+  "conditionnel_présent","conditionnel_passé",
+  "subjonctif_présent","subjonctif_passé",
+  "subjonctif_imparfait","subjonctif_plus_que_parfait",
+  "participe_présent","participe_passé",
+  "gérondif_présent","gérondif_passé",
+  "impératif_présent"
+];
+
+let verbsEditMode   = false;
+let verbsCurrentIdx = -1;   // índice en verbsFiltered
+let verbsFiltered   = [];   // lista actual (filtrada + ordenada)
+
+// ── Clave de ordenación: sin tildes, sin "se " inicial ──────────
+function verbSortKey(infinitif) {
+  let s = (infinitif || '').toLowerCase();
+  // Quitar pronombre reflexivo inicial: "se ", "s'" → base
+  s = s.replace(/^s[e']\s*/,'');
+  // Eliminar diacríticos: é→e, à→a, ç→c, etc.
+  s = s.normalize('NFD').replace(/\p{Mn}/gu, '');
+  return s;
+}
+
+// ── Letra de agrupación (sin tilde, sin "se") ───────────────────
+function verbGroupLetter(infinitif) {
+  const key = verbSortKey(infinitif);
+  return key[0] ? key[0].toUpperCase() : '?';
+}
+
+// ── LISTA ────────────────────────────────────────────────────────
+function verbsRender() {
+  const listView   = document.getElementById('verbs-list-view');
+  const detailView = document.getElementById('verbs-detail-view');
+  listView.style.display   = 'flex';
+  detailView.style.display = 'none';
+
+  if(!DB) {
+    document.getElementById('verbs-alpha-list').innerHTML =
+      '<div class="verbs-empty"><div class="verbs-empty-icon">📂</div><div>Sin base de datos cargada</div></div>';
+    document.getElementById('verbs-count').textContent = '';
+    return;
+  }
+
+  // Ordenar ignorando tildes y "se "
+  const all = (DB.conjugaisons||[]).slice().sort((a,b)=>
+    verbSortKey(a.infinitif).localeCompare(verbSortKey(b.infinitif), 'fr')
+  );
+
+  const q = (document.getElementById('verbs-search').value||'').toLowerCase().trim();
+  verbsFiltered = q
+    ? all.filter(v =>
+        verbSortKey(v.infinitif).includes(q) ||
+        (v.infinitif||'').toLowerCase().includes(q) ||
+        (v.traduction||'').toLowerCase().includes(q))
+    : all;
+
+  document.getElementById('verbs-count').textContent =
+    `${verbsFiltered.length} verbo${verbsFiltered.length!==1?'s':''} de ${all.length}`;
+
+  if(!verbsFiltered.length) {
+    document.getElementById('verbs-alpha-list').innerHTML =
+      '<div class="verbs-empty"><div class="verbs-empty-icon">🔍</div><div>Sin resultados</div></div>';
+    return;
+  }
+
+  // Agrupar por letra de ordenación (sin tilde, sin "se")
+  const groups = {};
+  verbsFiltered.forEach((v,i) => {
+    const l = verbGroupLetter(v.infinitif);
+    if(!groups[l]) groups[l] = [];
+    groups[l].push({v, i});
+  });
+
+  let html = '';
+  Object.keys(groups).sort((a,b)=>a.localeCompare(b,'fr')).forEach(letter => {
+    html += `<div class="verb-alpha-group"><span class="verb-alpha-letter">${letter}</span><div class="verb-list-group">`;
+    groups[letter].forEach(({v, i}) => {
+      html += `<div class="verb-list-item" onclick="verbsOpenDetail(${i})">
+        <span class="vli-inf">${v.infinitif}</span>
+        <span class="vli-trad">${v.traductions||''}</span>
+        <div class="vli-tags">
+          <span class="badge-nivel badge-${v.niveau}">${v.niveau||''}</span>
+          <span class="vli-tag">Groupe ${v.groupe||'?'}</span>
+          <span class="badge-reg badge-${v.registre}">${REG_LABELS[v.registre]||''}</span>
+        </div>
+        <span class="vli-arrow">›</span>
+      </div>`;
+    });
+    html += '</div></div>';
+  });
+  document.getElementById('verbs-alpha-list').innerHTML = html;
+}
+
+function verbsFilter() { verbsRender(); }
+
+// ── DETALLE ──────────────────────────────────────────────────────
+function verbsOpenDetail(idx) {
+  verbsCurrentIdx = idx;
+  verbsEditMode   = false;
+  document.getElementById('verbs-list-view').style.display   = 'none';
+  document.getElementById('verbs-detail-view').style.display = 'flex';
+  verbsRenderDetail();
+}
+
+function verbsBack() {
+  if(verbsEditMode && !confirm('¿Salir sin guardar los cambios?')) return;
+  verbsEditMode = false;
+  verbsRender();
+}
+
+function verbsNavigate(dir) {
+  const newIdx = verbsCurrentIdx + dir;
+  if(newIdx < 0 || newIdx >= verbsFiltered.length) return;
+  if(verbsEditMode && !confirm('¿Cambiar de verbo sin guardar?')) return;
+  verbsCurrentIdx = newIdx;
+  verbsEditMode   = false;
+  verbsRenderDetail();
+}
+
+function verbsRenderDetail() {
+  const v = verbsFiltered[verbsCurrentIdx];
+  if(!v) return;
+
+  // ── Topbar ────────────────────────────────────────────────────
+  document.getElementById('vd-inf').textContent = v.infinitif || '';
+  document.getElementById('vd-inf-ipa').textContent = v.ipa_infinitif || '';
+  document.getElementById('vd-meta').innerHTML = [
+    v.groupe     ? `<span class="vd-tag">Groupe ${v.groupe}</span>` : '',
+    v.auxiliaire ? `<span class="vd-aux">Aux. ${v.auxiliaire}</span>`  : '',
+    v.traductions ? `<span class="vd-trad">${v.traductions}</span>`  : ''
+  ].join('');
+
+  // ── Botones edit/save ─────────────────────────────────────────
+  const btnEdit = document.getElementById('btn-edit-toggle');
+  const btnSave = document.getElementById('btn-save-conj');
+  btnEdit.textContent = verbsEditMode ? '✕ Cancelar edición' : '✏️ Editar';
+  btnEdit.classList.toggle('active', verbsEditMode);
+  btnSave.style.display = verbsEditMode ? 'flex' : 'none';
+
+  // ── Nav prev/next ─────────────────────────────────────────────
+  document.getElementById('vd-nav-label').textContent =
+    `${verbsCurrentIdx+1} / ${verbsFiltered.length}`;
+  document.getElementById('btn-prev-verb').disabled = verbsCurrentIdx === 0;
+  document.getElementById('btn-next-verb').disabled = verbsCurrentIdx === verbsFiltered.length-1;
+
+  // ── Conjugaciones ─────────────────────────────────────────────
+  const conj      = v.conjugaisons || v.conjugaciones || {};
+  const knownTenses = TENSE_ORDER.filter(t => hasTenseData(conj, t));
+  const extraTenses = Object.keys(conj).filter(t => !TENSE_ORDER.includes(t) && hasTenseData(conj, t));
+  const allTenses   = [...knownTenses, ...extraTenses];
+
+  if(!allTenses.length) {
+    document.getElementById('vd-conj-grid').innerHTML =
+      '<div style="color:var(--gray);grid-column:1/-1;padding:20px 0">Sin conjugaciones disponibles</div>';
+    return;
+  }
+
+  let gridHTML = '';
+  allTenses.forEach(t => {
+    const label   = TENSE_LABELS[t] || t.replace(/_/g,' ');
+    const forms   = conj[t];          // objeto { "0":{forme:"..."}, "1":{forme:"..."}, … }
+    const editing = verbsEditMode;
+
+    // ── Seleccionar la lista de pronombres según el tiempo ───────
+    // TENSE_PRONOUNS cubre todos los tiempos conocidos.
+    // Para tiempos desconocidos, inferimos por la cantidad de formas.
+    let prons = TENSE_PRONOUNS[t];
+    if(!prons) {
+      const n = Object.keys(forms).length;
+      if     (n === 6) prons = PRONOUNS;
+      else if(n === 3) prons = PRONOUNS_IMP;
+      else if(n === 4) prons = PRONOUNS_PAR;
+      else {
+        if (label=="gérondif_passé")
+          prons = PRONOUNS_GEP;
+        else 
+          prons = PRONOUNS_SIN;
+      } 
+    }
+
+    // ── Filas de conjugación ─────────────────────────────────────
+    let rows = '';
+
+    if(typeof forms === 'object' && forms !== null) {
+      // Iterar en orden numérico de las claves ("0","1","2"…)
+      const keys = Object.keys(forms).sort((a,b) => Number(a)-Number(b));
+      keys.forEach((k, pos) => {
+        const entry = forms[k];
+        // La forma puede estar en entry.forme (objeto) o ser la cadena directa
+        const f = (typeof entry === 'object' && entry !== null)
+                  ? (entry.forme ?? '')
+                  : (entry ?? '');
+
+        // Pronombre: buscar primero por posición en el array, luego por clave
+        let pron = prons[pos] !== undefined ? prons[pos] : (prons[k] || '');
+        // Para PRONOUNS_PAR mostramos la etiqueta larga
+        if(prons === PRONOUNS_PAR) pron = PRONOUNS_PAR_LABELS[pron] || pron;
+
+        if(editing) {
+          rows += `<div class="conj-row">
+            <span class="conj-pron">${pron}</span>
+            <input class="conj-input" data-tense="${t}" data-key="${k}" data-part="forme" value="${(f||'').replace(/"/g,'&quot;')}">
+            <input class="conj-input" data-tense="${t}" data-key="${k}" data-part="ipa" value="${(entry.ipa||'').replace(/"/g,'&quot;')}">
+          </div>`;
+        } else {
+          rows += `<div class="conj-row">
+            <span class="conj-pron">${pron}</span>
+            <span class="conj-form">${f || '—'}</span>
+            <span class="conj-ipa">${entry.ipa || '—'}</span>
+          </div>`;
+        }
+      });
+
+    } else if(typeof forms === 'string') {
+      // Caso raro: la conjugación es directamente una cadena
+      if(editing) {
+        rows = `<div class="conj-row">
+          <input class="conj-input" data-tense="${t}" data-key="str" value="${forms.replace(/"/g,'&quot;')}">
+        </div>`;
+      } else {
+        rows = `<div class="conj-row"><span class="conj-form">${forms}</span></div>`;
+      }
+    }
+
+    gridHTML += `<div class="conj-tense${editing?' editing':''}">
+      <div class="conj-tense-title">${label}</div>${rows}
+    </div>`;
+  });
+
+  document.getElementById('vd-conj-grid').innerHTML = gridHTML;
+}
+
+function hasTenseData(conj, t) {
+  const d = conj[t];
+  if(!d) return false;
+  if(typeof d === 'string') return d.length > 0;
+  if(typeof d === 'object') return Object.keys(d).length > 0;
+  return false;
+}
+
+function verbsToggleEdit() {
+  verbsEditMode = !verbsEditMode;
+  verbsRenderDetail();
+}
+
+function verbsSaveEdit() {
+  const v = verbsFiltered[verbsCurrentIdx];
+  if(!v) return;
+  const conj = v.conjugaisons || v.conjugaciones || (v.conjugaisons = {});
+
+  document.querySelectorAll('#vd-conj-grid .conj-input').forEach(inp => {
+    const t   = inp.dataset.tense;
+    const key = inp.dataset.key;
+    const part = inp.dataset.part;
+    const val = inp.value.trim();
+
+    if(key === 'str') {
+      // Caso cadena directa
+      conj[t] = val;
+    } else if(conj[t] && typeof conj[t] === 'object') {
+      // Mantener la estructura {forme: "..."} si ya existía
+      if(typeof conj[t][key] === 'object' && conj[t][key] !== null) {
+          conj[t][key][part] = val;
+
+      } else {
+        conj[t][key][part] = val;
+      }
+    }
+  });
+
+  verbsEditMode = false;
+  verbsRenderDetail();
+  showToast('💾', `Conjugaciones de "${v.infinitif}" guardadas`);
+}
+// ════════════════════════════════════════════════════════════════
+// EDICIÓN PALABRAS
+// ════════════════════════════════════════════════════════════════
+let wordsEditMode = false;
+
+function wordsToggleEdit() {
+  if(!DB) return;
+  if(wordsEditMode) {
+    if(!confirm('¿Salir del modo edición sin guardar?')) return;
+    wordsEditMode = false;
+  } else {
+    wordsEditMode = true;
+  }
+  wordsApplyEditUI();
+  renderPreview();
+}
+
+function wordsApplyEditUI() {
+  const btnEdit   = document.getElementById('btn-words-edit');
+  const btnSave   = document.getElementById('btn-words-save');
+  const banner    = document.getElementById('edit-mode-banner');
+  const btnExcelEl = document.getElementById('btn-excel');
+  const btnCsvEl   = document.getElementById('btn-csv');
+  const btnJsonEl  = document.getElementById('btn-json-preview');
+
+  btnEdit.textContent = wordsEditMode ? '✕ Cancelar' : '✏️ Editar';
+  btnEdit.classList.toggle('active', wordsEditMode);
+  btnSave.style.display = wordsEditMode ? 'flex' : 'none';
+  banner.classList.toggle('show', wordsEditMode);
+
+  if(wordsEditMode) {
+    btnExcelEl.disabled = true;
+    btnCsvEl.disabled   = true;
+    if(btnJsonEl) btnJsonEl.disabled = true;
+  } else {
+    const data = getFilteredData();
+    const has  = data.reduce((a,c)=>a+c.subcategories.reduce((b,s)=>b+s.mots.length,0),0) > 0;
+    btnExcelEl.disabled = !has;
+    btnCsvEl.disabled   = !has;
+    if(btnJsonEl) btnJsonEl.disabled = !has;
+  }
+}
+
+function wordsSaveEdit() {
+  if(!DB) return;
+  document.querySelectorAll('#preview-table .preview-row.editing').forEach(row => {
+    const catId  = row.dataset.catId;
+    const subId  = row.dataset.subId;
+    const motKey = row.dataset.mot;
+
+    const cat = DB.categories.find(c => c.id === catId);
+    if(!cat) return;
+    const sub = cat.subcategories.find(s => s.id === subId);
+    if(!sub) return;
+    const mot = sub.mots.find(m => m.mot === motKey);
+    if(!mot) return;
+
+    row.querySelectorAll('[data-field]').forEach(inp => {
+      const field = inp.dataset.field;
+      const val   = inp.value.trim();
+      if(field === 'traductions' || field === 'synonymes') {
+        mot[field] = val ? val.split(',').map(s => s.trim()).filter(Boolean) : [];
+      } else {
+        mot[field] = val;
+      }
+    });
+  });
+
+  wordsEditMode = false;
+  wordsApplyEditUI();
+  renderPreview();
+  showToast('💾', 'Cambios guardados en la base de datos');
+}
 
 // ── BOOT ──────────────────────────────────────────────────
 loadDB();
