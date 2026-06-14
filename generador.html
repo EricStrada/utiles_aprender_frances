@@ -717,7 +717,7 @@ function renderPreview(){
       sub.mots.forEach(m=>{
         const motEsc = m.mot.replace(/"/g,'&quot;');
         if(wordsEditMode) {
-          const genreOpts = ['m.', 'f.', 'm.pl.', 'f.pl.'].map(n=>`<option value="${n}"${m.genre===n?' selected':''}>${n}</option>`).join('');
+          const genreOpts = ['m.', 'f.', 'm./f.', 'm.pl.', 'f.pl.'].map(n=>`<option value="${n}"${m.genre===n?' selected':''}>${n}</option>`).join('');
           const niveauOpts = ['A1','A2','B1','B2','C1','C2'].map(n=>`<option value="${n}"${m.niveau===n?' selected':''}>${n}</option>`).join('');
           const regOpts = REGISTRES.map(r=>`<option value="${r}"${m.registre===r?' selected':''}>${REG_LABELS[r]}</option>`).join('');
           html+=`<div class="preview-row editing" data-cat-id="${cat.id}" data-sub-id="${sub.id}" data-mot="${motEsc}">

@@ -854,7 +854,7 @@
             {
               "mot": "pâtes",
               "ipa": "/pɑt/",
-              "genre": "f.",
+              "genre": "f.pl.",
               "autre_genre": null,
               "traductions": [
                 "pasta"
@@ -1619,7 +1619,7 @@
             {
               "mot": "nems",
               "ipa": "nɛm",
-              "genre": "m.",
+              "genre": "m.pl.",
               "autre_genre": null,
               "traductions": [
                 "rollitos de primavera",
@@ -1718,7 +1718,7 @@
             {
               "mot": "tapas",
               "ipa": "tapas",
-              "genre": "f.",
+              "genre": "f.pl.",
               "autre_genre": null,
               "traductions": [
                 "tapas"
@@ -3494,7 +3494,7 @@
             {
               "mot": "coulisses",
               "ipa": "kulɛs",
-              "genre": "f.",
+              "genre": "f.pl.",
               "autre_genre": null,
               "traductions": [
                 "bastidores",
@@ -3768,7 +3768,7 @@
             {
               "mot": "claquettes",
               "ipa": "klakɛt",
-              "genre": "f.",
+              "genre": "f.pl.",
               "autre_genre": null,
               "traductions": [
                 "claqué",
@@ -4852,7 +4852,7 @@
             {
               "mot": "sous-titres",
               "ipa": "/sutitʁ/",
-              "genre": "m.",
+              "genre": "m.pl.",
               "autre_genre": null,
               "traductions": [
                 "subtítulos"
@@ -6792,7 +6792,7 @@
             {
               "mot": "Lumières",
               "ipa": "lymiɛʁ",
-              "genre": "f.",
+              "genre": "f.pl.",
               "autre_genre": null,
               "traductions": [
                 "Ilustración"
@@ -7948,7 +7948,7 @@
             {
               "mot": "triglycérides",
               "ipa": "tʁiɡliseʁid",
-              "genre": "m.",
+              "genre": "m.pl.",
               "autre_genre": null,
               "traductions": [
                 "triglicéridos"
@@ -8099,7 +8099,7 @@
             {
               "mot": "plaquettes",
               "ipa": "plakɛt",
-              "genre": "f.",
+              "genre": "f.pl.",
               "autre_genre": null,
               "traductions": [
                 "plaquetas"
@@ -9469,7 +9469,7 @@
             {
               "mot": "effets secondaires",
               "ipa": "/efɛ səkɔ̃dɛʁ/",
-              "genre": "m.",
+              "genre": "m.pl.",
               "autre_genre": null,
               "traductions": [
                 "efectos secundarios"
@@ -10202,7 +10202,7 @@
             {
               "mot": "méninges",
               "ipa": "menɛ̃ʒ",
-              "genre": "f.",
+              "genre": "f.pl.",
               "autre_genre": null,
               "traductions": [
                 "meninges"
@@ -10407,7 +10407,7 @@
             {
               "mot": "varices",
               "ipa": "vaʁis",
-              "genre": "f.",
+              "genre": "f.pl.",
               "autre_genre": null,
               "traductions": [
                 "varices"
@@ -11337,7 +11337,7 @@
             {
               "mot": "anticorps",
               "ipa": "ɑ̃tikɔʁ",
-              "genre": "m.",
+              "genre": "m.pl.",
               "autre_genre": null,
               "traductions": [
                 "anticuerpo"
@@ -14108,7 +14108,7 @@
             {
               "mot": "crampons",
               "ipa": "kʁɑ̃pɔ̃",
-              "genre": "m.",
+              "genre": "m.pl.",
               "autre_genre": null,
               "traductions": [
                 "crampones"
@@ -14257,7 +14257,7 @@
             {
               "mot": "haies",
               "ipa": "ɛ",
-              "genre": "f.",
+              "genre": "f.pl.",
               "autre_genre": null,
               "traductions": [
                 "vallas"
@@ -16527,7 +16527,7 @@
             {
               "mot": "capitaux propres",
               "ipa": "kapito pʁɔpʁ",
-              "genre": "m.",
+              "genre": "m.pl.",
               "autre_genre": null,
               "traductions": [
                 "patrimonio neto",
@@ -16704,7 +16704,7 @@
             {
               "mot": "norme IFRS",
               "ipa": "nɔʁm ifʁɛs",
-              "genre": "f.",
+              "genre": "f.pl.",
               "autre_genre": null,
               "traductions": [
                 "norma IFRS"
@@ -17750,7 +17750,7 @@
             {
               "mot": "heures supplémentaires",
               "ipa": "/œʁ syplemɑ̃tɛʁ/",
-              "genre": "f.",
+              "genre": "f.pl.",
               "autre_genre": null,
               "traductions": [
                 "horas extra"
@@ -18686,7 +18686,7 @@
             {
               "mot": "TICE",
               "ipa": "tis",
-              "genre": "f.",
+              "genre": "f.pl.",
               "autre_genre": null,
               "traductions": [
                 "TICE",
@@ -19118,7 +19118,7 @@
             {
               "mot": "mathématiques",
               "ipa": "/matematik/",
-              "genre": "f.",
+              "genre": "f.pl.",
               "autre_genre": null,
               "traductions": [
                 "matemáticas"
@@ -19258,7 +19258,7 @@
             {
               "mot": "arts plastiques",
               "ipa": "/aʁ plastik/",
-              "genre": "m.",
+              "genre": "m.pl.",
               "autre_genre": null,
               "traductions": [
                 "artes plásticas",
@@ -19427,10 +19427,10 @@
             {
               "mot": "classes préparatoires",
               "ipa": "klas pʁepaʁatwaʁ",
-              "genre": "f.",
+              "genre": "f.pl.",
               "autre_genre": null,
               "traductions": [
-                "clases preparatorias para grandes écoles"
+                "clases preparatorias"
               ],
               "synonymes": [
                 "prépa",
@@ -21992,7 +21992,7 @@
             {
               "mot": "cookies",
               "ipa": "kukiz",
-              "genre": "m.",
+              "genre": "m.pl.",
               "autre_genre": null,
               "traductions": [
                 "cookies",
@@ -24344,7 +24344,7 @@
             {
               "mot": "mâchicoulis",
               "ipa": "maʃikuli",
-              "genre": "m.",
+              "genre": "m.pl.",
               "autre_genre": null,
               "traductions": [
                 "matacán"
@@ -24358,7 +24358,7 @@
             {
               "mot": "créneaux",
               "ipa": "kʁeno",
-              "genre": "m.",
+              "genre": "m.pl.",
               "autre_genre": null,
               "traductions": [
                 "almenas"
@@ -33563,7 +33563,7 @@
             {
               "mot": "fiançailles",
               "ipa": "fjɑ̃saj",
-              "genre": "f.",
+              "genre": "f.pl.",
               "autre_genre": null,
               "traductions": [
                 "compromiso",
@@ -33607,7 +33607,7 @@
             {
               "mot": "obsèques",
               "ipa": "ɔbsɛk",
-              "genre": "f.",
+              "genre": "f.pl.",
               "autre_genre": null,
               "traductions": [
                 "exequias",
@@ -33654,7 +33654,7 @@
             {
               "mot": "condoléances",
               "ipa": "kɔ̃doleɑ̃s",
-              "genre": "f.",
+              "genre": "f.pl.",
               "autre_genre": null,
               "traductions": [
                 "condolencias",
@@ -35099,7 +35099,7 @@
             {
               "mot": "félicitations",
               "ipa": "/felisitasjɔ̃/",
-              "genre": "f.",
+              "genre": "f.pl.",
               "autre_genre": null,
               "traductions": [
                 "felicitaciones",
@@ -36265,7 +36265,7 @@
             {
               "mot": "statuts",
               "ipa": "staty",
-              "genre": "m.",
+              "genre": "m.pl.",
               "autre_genre": null,
               "traductions": [
                 "estatutos"
@@ -36705,7 +36705,7 @@
             {
               "mot": "sanctions économiques",
               "ipa": "sɑ̃ksjɔ̃ ekonomik",
-              "genre": "f.",
+              "genre": "f.pl.",
               "autre_genre": null,
               "traductions": [
                 "sanciones económicas"
@@ -38402,7 +38402,7 @@
             {
               "mot": "gants",
               "ipa": "/ɡɑ̃/",
-              "genre": "m.",
+              "genre": "m.pl.",
               "autre_genre": null,
               "traductions": [
                 "guantes"
@@ -38446,7 +38446,7 @@
             {
               "mot": "lunettes",
               "ipa": "/lynɛt/",
-              "genre": "f.",
+              "genre": "f.pl.",
               "autre_genre": null,
               "traductions": [
                 "gafas"
@@ -39033,7 +39033,7 @@
             {
               "mot": "pinces",
               "ipa": "pɛ̃s",
-              "genre": "f.",
+              "genre": "f.pl.",
               "autre_genre": null,
               "traductions": [
                 "pinzas (costura)"
@@ -39181,7 +39181,7 @@
             {
               "mot": "fibres recyclées",
               "ipa": "fibʁ ʁəsikle",
-              "genre": "f.",
+              "genre": "f.pl.",
               "autre_genre": null,
               "traductions": [
                 "fibras recicladas"
@@ -39504,7 +39504,7 @@
             {
               "mot": "chaussures",
               "ipa": "/ʃosyʁ/",
-              "genre": "f.",
+              "genre": "f.pl.",
               "autre_genre": null,
               "traductions": [
                 "zapatos"
@@ -39521,7 +39521,7 @@
             {
               "mot": "bottes",
               "ipa": "/bɔt/",
-              "genre": "f.",
+              "genre": "f.pl.",
               "autre_genre": null,
               "traductions": [
                 "botas"
@@ -39535,7 +39535,7 @@
             {
               "mot": "sandales",
               "ipa": "/sɑ̃dal/",
-              "genre": "f.",
+              "genre": "f.pl.",
               "autre_genre": null,
               "traductions": [
                 "sandalias"
@@ -39552,7 +39552,7 @@
             {
               "mot": "baskets",
               "ipa": "/baskɛt/",
-              "genre": "f.",
+              "genre": "f.pl.",
               "autre_genre": null,
               "traductions": [
                 "zapatillas deportivas"
@@ -39569,7 +39569,7 @@
             {
               "mot": "talons",
               "ipa": "/talɔ̃/",
-              "genre": "m.",
+              "genre": "m.pl.",
               "autre_genre": null,
               "traductions": [
                 "tacones"
@@ -39586,7 +39586,7 @@
             {
               "mot": "pantoufles",
               "ipa": "/pɑ̃tufl/",
-              "genre": "f.",
+              "genre": "f.pl.",
               "autre_genre": null,
               "traductions": [
                 "zapatillas de casa"
@@ -42727,7 +42727,7 @@
             {
               "mot": "bac à fleurs",
               "ipa": "bak a flœʁ",
-              "genre": "m.",
+              "genre": "m.pl.",
               "autre_genre": null,
               "traductions": [
                 "jardinera",
