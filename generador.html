@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Générateur v10 — Dictionnaire Français</title>
+<title>Générateur v13 — Dictionnaire Français</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -286,7 +286,11 @@ h1{font-family:'Playfair Display',serif;font-size:clamp(22px,4vw,34px);font-weig
 .btn-verb-nav:hover:not(:disabled){border-color:var(--gold);color:var(--gold)}
 .btn-verb-nav:disabled{opacity:.3;cursor:default}
 .verb-nav-label{font-size:12px;color:var(--gray);font-family:'Playfair Display',serif}
-.conj-section-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--gray);margin:20px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--border2);grid-column:1/-1}
+.verb-list-item.no-conj{opacity:.38;cursor:default;pointer-events:none}
+.verb-list-item.no-conj .vli-arrow{display:none}
+.vli-no-conj-badge{font-size:10px;color:var(--gray);background:rgba(255,255,255,.05);padding:2px 7px;border-radius:99px;border:1px solid rgba(255,255,255,.08);flex-shrink:0}
+.btn-hide-no-conj{display:flex;align-items:center;gap:6px;padding:7px 13px;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:var(--gray2);transition:all .2s;white-space:nowrap}
+.btn-hide-no-conj.active{background:rgba(201,168,76,.12);border-color:var(--gold);color:var(--gold-light)}
 
 </style>
 </head>
@@ -547,7 +551,7 @@ const DB_URL='dictionnaire.json';
 const NIVELES=['A1','A2','B1','B2','C1','C2'];
 const REGISTRES=['standard','familier','soutenu','technique'];
 const REG_LABELS={standard:'Estándar',familier:'Familiar',soutenu:'Culto',technique:'Técnico'};
-const ENRICHABLE=['ipa','genre','autre_genre','synonymes','exemple','type_mot'];
+const ENRICHABLE=['ipa','genre','autre_genre','synonymes','exemple','type_mot','groupe','auxiliaire','conjugaisons'];
 
 let DB=null;
 let selectedNiveles=new Set(NIVELES);
@@ -717,7 +721,7 @@ function renderPreview(){
       sub.mots.forEach(m=>{
         const motEsc = m.mot.replace(/"/g,'&quot;');
         if(wordsEditMode) {
-          const genreOpts = ['m.', 'f.', 'm./f.', 'm.pl.', 'f.pl.'].map(n=>`<option value="${n}"${m.genre===n?' selected':''}>${n}</option>`).join('');
+          const genreOpts = ['m.', 'f.', 'inv.', 'm.pl.', 'f.pl.'].map(n=>`<option value="${n}"${m.genre===n?' selected':''}>${n}</option>`).join('');
           const niveauOpts = ['A1','A2','B1','B2','C1','C2'].map(n=>`<option value="${n}"${m.niveau===n?' selected':''}>${n}</option>`).join('');
           const regOpts = REGISTRES.map(r=>`<option value="${r}"${m.registre===r?' selected':''}>${REG_LABELS[r]}</option>`).join('');
           html+=`<div class="preview-row editing" data-cat-id="${cat.id}" data-sub-id="${sub.id}" data-mot="${motEsc}">
@@ -855,7 +859,8 @@ function updateMergeStatus(){
   ['btn-export-json','merge-btn-excel','merge-btn-csv'].forEach(id=>{const e=document.getElementById(id);if(e)e.disabled=!DB;});
   if(!DB){nm.textContent='Sin base de datos cargada';st.innerHTML='';return;}
   nm.textContent=DB.meta?.title||'Dictionnaire de Français';
-  const w=getTotalWords(DB),c=DB.categories.length,s=DB.categories.reduce((a,c)=>a+c.subcategories.length,0),v=(DB.conjugaisons||[]).length;
+  const w=getTotalWords(DB),c=DB.categories.length,s=DB.categories.reduce((a,c)=>a+c.subcategories.length,0);
+  const v=DB.categories.reduce((a,cat)=>a+cat.subcategories.reduce((b,sub)=>b+sub.mots.filter(m=>m.type_mot==='verbe'&&m.conjugaisons&&Object.keys(m.conjugaisons).length>0).length,0),0);
   st.innerHTML=`<span class="db-stat-pill"><strong>${w}</strong> palabras</span><span class="db-stat-pill"><strong>${c}</strong> categorías</span><span class="db-stat-pill"><strong>${s}</strong> subcategorías</span><span class="db-stat-pill"><strong>${v}</strong> verbos</span>`;
 }
 
@@ -975,13 +980,6 @@ function performMerge(inc,filename){
         else nS++;
       }
     }
-  }
-  if(Array.isArray(inc.conjugaisons)&&inc.conjugaisons.length){
-    if(!Array.isArray(DB.conjugaisons))DB.conjugaisons=[];
-    const ei=new Set(DB.conjugaisons.map(v=>v.infinitif.toLowerCase()));
-    let va=0;
-    for(const v of inc.conjugaisons){if(!ei.has(v.infinitif.toLowerCase())){DB.conjugaisons.push(JSON.parse(JSON.stringify(v)));ei.add(v.infinitif.toLowerCase());va++;log.push({t:'added',s:`+ Verbo "${v.infinitif}"`});}}
-    if(va)log.push({t:'section',s:`${va} verbo(s) nuevos`});
   }
   log.push({t:'summary',s:`✓ +${nA} añadidas · ↑${nU} actualizadas · ${nS} sin cambios`+(nC?` · ${nC} cat.`:'')+( nB?` · ${nB} sub.`:'')});
   showMergeLog(log); updateMergeStatus(); initUI();
@@ -1572,8 +1570,31 @@ function verbsRender() {
     return;
   }
 
+  // Collect all verbs from mots across all categories/subcategories
+  const allVerbs = [];
+  (DB.categories||[]).forEach(cat => {
+    cat.subcategories.forEach(sub => {
+      sub.mots.forEach(m => {
+        if(m.type_mot === 'verbe') {
+          // Build a verb object compatible with the display code
+          allVerbs.push({
+            infinitif: m.mot,
+            ipa_infinitif: m.ipa || '',
+            groupe: m.groupe,
+            auxiliaire: m.auxiliaire,
+            traductions: Array.isArray(m.traductions) ? m.traductions : [m.traductions||''],
+            niveau: m.niveau,
+            registre: m.registre,
+            conjugaisons: m.conjugaisons || {},
+            _catId: cat.id, _subId: sub.id
+          });
+        }
+      });
+    });
+  });
+
   // Ordenar ignorando tildes y "se "
-  const all = (DB.conjugaisons||[]).slice().sort((a,b)=>
+  const all = allVerbs.slice().sort((a,b)=>
     verbSortKey(a.infinitif).localeCompare(verbSortKey(b.infinitif), 'fr')
   );
 
@@ -1582,7 +1603,7 @@ function verbsRender() {
     ? all.filter(v =>
         verbSortKey(v.infinitif).includes(q) ||
         (v.infinitif||'').toLowerCase().includes(q) ||
-        (v.traduction||'').toLowerCase().includes(q))
+        (v.traductions||[]).join(' ').toLowerCase().includes(q))
     : all;
 
   document.getElementById('verbs-count').textContent =
@@ -1608,10 +1629,10 @@ function verbsRender() {
     groups[letter].forEach(({v, i}) => {
       html += `<div class="verb-list-item" onclick="verbsOpenDetail(${i})">
         <span class="vli-inf">${v.infinitif}</span>
-        <span class="vli-trad">${v.traductions||''}</span>
+        <span class="vli-trad">${(v.traductions||[]).join(', ')}</span>
         <div class="vli-tags">
           <span class="badge-nivel badge-${v.niveau}">${v.niveau||''}</span>
-          <span class="vli-tag">Groupe ${v.groupe||'?'}</span>
+          ${v.groupe?`<span class="vli-tag">Groupe ${v.groupe}</span>`:''}
           <span class="badge-reg badge-${v.registre}">${REG_LABELS[v.registre]||''}</span>
         </div>
         <span class="vli-arrow">›</span>
@@ -1777,7 +1798,7 @@ function verbsToggleEdit() {
 function verbsSaveEdit() {
   const v = verbsFiltered[verbsCurrentIdx];
   if(!v) return;
-  const conj = v.conjugaisons || v.conjugaciones || (v.conjugaisons = {});
+  const conj = v.conjugaisons || (v.conjugaisons = {});
 
   document.querySelectorAll('#vd-conj-grid .conj-input').forEach(inp => {
     const t   = inp.dataset.tense;
@@ -1786,18 +1807,23 @@ function verbsSaveEdit() {
     const val = inp.value.trim();
 
     if(key === 'str') {
-      // Caso cadena directa
       conj[t] = val;
     } else if(conj[t] && typeof conj[t] === 'object') {
-      // Mantener la estructura {forme: "..."} si ya existía
       if(typeof conj[t][key] === 'object' && conj[t][key] !== null) {
           conj[t][key][part] = val;
-
       } else {
         conj[t][key][part] = val;
       }
     }
   });
+
+  // Sync back to DB: find the mot in DB.categories and update its conjugaisons
+  if(v._catId && v._subId) {
+    const cat = (DB.categories||[]).find(c=>c.id===v._catId);
+    const sub = cat && cat.subcategories.find(s=>s.id===v._subId);
+    const mot = sub && sub.mots.find(m=>m.mot===v.infinitif && m.type_mot==='verbe');
+    if(mot) mot.conjugaisons = conj;
+  }
 
   verbsEditMode = false;
   verbsRenderDetail();

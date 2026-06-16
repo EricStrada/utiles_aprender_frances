@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Quiz — Vocabulaire Français v4</title>
+<title>Quiz — Vocabulaire Français v5.4</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -28,6 +28,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--cream);m
 .logo-title{font-family:'Playfair Display',serif;font-size:16px;color:var(--goldL);font-weight:700}
 .logo-sub{font-size:10px;color:var(--gray);text-transform:uppercase;letter-spacing:1.5px;margin-top:2px}
 .sec-title{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--gray);margin-bottom:7px}
+.filter-sublbl{font-size:10px;font-weight:500;color:var(--gray2);margin-bottom:5px;display:block}
 
 /* Mode group headers */
 .mode-group{border-radius:11px;overflow:hidden;border:1px solid var(--bord2)}
@@ -48,17 +49,24 @@ body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--cream);m
 .mode-tab.active-vocab .tb{background:rgba(201,168,76,.15);color:var(--goldL)}
 .mode-tab.active-verb .tb{background:rgba(26,92,168,.2);color:var(--blueL)}
 
-/* Filters */
-.nivel-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
-.nchip{padding:5px 2px;border-radius:7px;font-size:11px;font-weight:700;text-align:center;cursor:pointer;border:1.5px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);color:var(--gray2);transition:all var(--tr);user-select:none}
-.nchip.on-A1{background:rgba(45,125,70,.2);color:#6BCB8B;border-color:#2D7D46}
-.nchip.on-A2{background:rgba(62,158,92,.2);color:#6BCB8B;border-color:#3E9E5C}
-.nchip.on-B1{background:rgba(26,92,168,.2);color:#78AAEC;border-color:#1A5CA8}
-.nchip.on-B2{background:rgba(41,121,208,.2);color:#78AAEC;border-color:#2979D0}
-.nchip.on-C1{background:rgba(123,63,160,.2);color:#C084E8;border-color:#7B3FA0}
-.nchip.on-C2{background:rgba(156,82,199,.2);color:#C084E8;border-color:#9C52C7}
+/* ── CHIP FILTERS (generador style) ── */
+.chips{display:flex;flex-wrap:wrap;gap:5px}
+.chip{padding:4px 10px;border-radius:99px;font-size:11px;font-weight:500;cursor:pointer;border:1.5px solid transparent;transition:all var(--tr);user-select:none}
 
-/* Category filter (vocab only) */
+/* Nivel chips */
+.chip-nivel{background:rgba(255,255,255,.05);color:var(--gray2);border-color:rgba(255,255,255,.1)}
+.chip-nivel.active-A1{background:rgba(45,125,70,.2);color:#6BCB8B;border-color:#2D7D46}
+.chip-nivel.active-A2{background:rgba(62,158,92,.2);color:#6BCB8B;border-color:#3E9E5C}
+.chip-nivel.active-B1{background:rgba(26,92,168,.2);color:#78AAEC;border-color:#1A5CA8}
+.chip-nivel.active-B2{background:rgba(41,121,208,.2);color:#78AAEC;border-color:#2979D0}
+.chip-nivel.active-C1{background:rgba(123,63,160,.2);color:#C084E8;border-color:#7B3FA0}
+.chip-nivel.active-C2{background:rgba(156,82,199,.2);color:#C084E8;border-color:#9C52C7}
+
+/* Registre chips */
+.chip-reg{background:rgba(255,255,255,.05);color:var(--gray2);border-color:rgba(255,255,255,.1)}
+.chip-reg.active{background:rgba(201,168,76,.15);color:var(--goldL);border-color:var(--gold)}
+
+/* Category filter */
 .cat-filter-wrap{display:flex;flex-direction:column;gap:3px;max-height:160px;overflow-y:auto}
 .cat-filter-wrap::-webkit-scrollbar{width:3px}.cat-filter-wrap::-webkit-scrollbar-thumb{background:var(--bord);border-radius:99px}
 .cat-chip{padding:5px 9px;border-radius:8px;font-size:11px;cursor:pointer;border:1.5px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);color:var(--gray2);transition:all var(--tr);display:flex;align-items:center;justify-content:space-between;user-select:none}
@@ -66,11 +74,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--cream);m
 .cat-chip-dot{width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.6}
 .cat-all-btn{font-size:10px;color:var(--gray);cursor:pointer;text-align:right;padding:2px 0;text-decoration:underline;text-underline-offset:2px}
 .cat-all-btn:hover{color:var(--goldL)}
-
-.rchips{display:flex;flex-direction:column;gap:3px}
-.rchip{padding:5px 9px;border-radius:8px;font-size:11px;cursor:pointer;border:1.5px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);color:var(--gray2);transition:all var(--tr);display:flex;align-items:center;justify-content:space-between;user-select:none}
-.rchip.on{background:rgba(201,168,76,.1);color:var(--goldL);border-color:var(--gold)}
-.rchip-dot{width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.6}
 
 /* Config */
 .cfg-row{display:flex;align-items:center;justify-content:space-between;gap:5px;margin-bottom:7px}
@@ -145,7 +148,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--cream);m
 .opt.reveal{background:rgba(30,102,65,.15);border-color:var(--greenL);color:#5EC48A;animation:pulse .3s ease}
 .opt.reveal .opt-let{background:var(--greenL);color:#fff}
 @keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.02)}100%{transform:scale(1)}}
-/* Distractor label for conj_choice */
 .opt-sublbl{font-size:9px;opacity:.55;display:block;margin-top:2px;font-family:'DM Mono',monospace}
 
 /* Write mode */
@@ -219,7 +221,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--cream);m
   <div class="logo">
     <div class="logo-flag">🇫🇷</div>
     <div class="logo-title">Vocabulaire Français</div>
-    <div class="logo-sub">Quiz interactif · v4</div>
+    <div class="logo-sub">Quiz interactif · v5.3</div>
   </div>
 
   <!-- MODE GROUPS -->
@@ -267,26 +269,68 @@ body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--cream);m
   <!-- Reset notice -->
   <div class="reset-notice" id="reset-notice">↺ Juego reiniciado al cambiar de grupo</div>
 
-  <!-- NIVEL -->
-  <div>
-    <div class="sec-title" id="nivel-scope-lbl">Nivel MCER <span style="color:var(--gold);font-style:italic;font-size:9px">(vocabulario)</span></div>
-    <div class="nivel-grid" id="nivel-grid"></div>
-  </div>
+  <!-- ══ VOCAB FILTERS ══ -->
+  <div id="vocab-filters">
 
-  <!-- CATEGORY FILTER (vocab only) -->
-  <div id="cat-section">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px">
-      <div class="sec-title" style="margin-bottom:0">Categoría</div>
-      <span class="cat-all-btn" onclick="toggleAllCats()">todas / ninguna</span>
+    <!-- Nivel vocab -->
+    <div>
+      <div class="sec-title">Nivel MCER</div>
+      <div class="chips" id="vocab-nivel-chips"></div>
     </div>
-    <div class="cat-filter-wrap" id="cat-chips"></div>
-  </div>
 
-  <!-- REGISTER FILTER (vocab only) -->
-  <div id="reg-section">
-    <div class="sec-title">Registro</div>
-    <div class="rchips" id="reg-chips"></div>
-  </div>
+    <!-- Registre vocab -->
+    <div id="reg-section">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px">
+        <div class="sec-title" style="margin-bottom:0">Registro</div>
+      </div>
+      <div class="chips" id="reg-chips"></div>
+    </div>
+
+    <!-- Category vocab -->
+    <div id="cat-section">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px">
+        <div class="sec-title" style="margin-bottom:0">Categoría</div>
+        <span class="cat-all-btn" onclick="toggleAllCats()">todas / ninguna</span>
+      </div>
+      <div class="cat-filter-wrap" id="cat-chips"></div>
+    </div>
+
+    <!-- Type mot vocab -->
+    <div id="type-section">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px">
+        <div class="sec-title" style="margin-bottom:0">Tipo de palabra</div>
+        <span class="cat-all-btn" onclick="toggleAllTypes()">todas / ninguna</span>
+      </div>
+      <div class="cat-filter-wrap" id="type-chips"></div>
+    </div>
+
+  </div><!-- /vocab-filters -->
+
+  <!-- ══ VERB FILTERS ══ -->
+  <div id="verb-filters" style="display:none">
+
+    <!-- Nivel palabra (verbo) -->
+    <div>
+      <div class="sec-title">Nivel MCER — Palabra</div>
+      <div class="chips" id="verb-nivel-word-chips"></div>
+    </div>
+
+    <!-- Nivel tiempo verbal -->
+    <div>
+      <div class="sec-title">Nivel MCER — Tiempo verbal</div>
+      <div class="chips" id="verb-nivel-tense-chips"></div>
+    </div>
+
+    <!-- Category verb -->
+    <div id="verb-cat-section">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px">
+        <div class="sec-title" style="margin-bottom:0">Categoría</div>
+        <span class="cat-all-btn" onclick="toggleAllVerbCats()">todas / ninguna</span>
+      </div>
+      <div class="cat-filter-wrap" id="verb-cat-chips"></div>
+    </div>
+
+  </div><!-- /verb-filters -->
 
   <!-- CONFIG -->
   <div>
@@ -402,7 +446,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--cream);m
 // ════════════════════════════════════════════════════════════════
 const DB_URL  = 'dictionnaire.json';
 const LEVELS  = ['A1','A2','B1','B2','C1','C2'];
-const REGS    = ['standard','familier','soutenu','technique'];
 const REG_LBL = {standard:'Estándar',familier:'Familiar',soutenu:'Culto',technique:'Técnico'};
 
 const PERSONS     = ['je','tu','il','nous','vous','ils'];
@@ -438,15 +481,27 @@ const H_ASPIRE = new Set(['hamster','hibou','hiboux','honte','hanche','hareng','
 // STATE
 // ════════════════════════════════════════════════════════════════
 let DB = null;
-let selNiv  = new Set(LEVELS);
-let selReg  = new Set(REGS);
-let selCats = new Set();       // selected category names (vocab)
-let allCats = [];              // all category names from DB
-let curMode = 'vocab_fr';
-let curGroup = 'vocab';        // 'vocab' | 'verb'
+
+// Vocab filters
+let selNivVocab = new Set(LEVELS);
+let selCats     = new Set();
+let allCats     = [];
+let selReg      = new Set();
+let allReg      = [];
+let selTypes    = new Set();
+let allTypes    = [];
+
+// Verb filters
+let selNivVerb  = new Set(LEVELS);  // nivel de la palabra
+let selNivTense = new Set(LEVELS);  // nivel del tiempo verbal
+let selVerbCats = new Set();
+let allVerbCats = [];
+
+let curMode  = 'vocab_fr';
+let curGroup = 'vocab';
 let cfg = {round:20, ok:2.0, err:3.0};
 
-let vocabPool  = [];
+let vocabPool   = [];
 let verbEntries = [];
 
 let queue=[], qIdx=0, score=0, errors=0, streak=0, mistakes=[];
@@ -487,26 +542,55 @@ function onLoaded(){
 // ════════════════════════════════════════════════════════════════
 // FILTERS BUILD
 // ════════════════════════════════════════════════════════════════
-function buildFilters(){
-  // Nivel chips
-  const ng=document.getElementById('nivel-grid');
+
+// Build a row of nivel chips (pill style, generador)
+function buildNivelChips(containerId, selSet, onChange){
+  const wrap = document.getElementById(containerId);
   LEVELS.forEach(n=>{
-    const el=document.createElement('div');
-    el.className=`nchip on-${n}`; el.textContent=n;
-    el.onclick=()=>{
-      if(selNiv.has(n)){if(selNiv.size===1) return; selNiv.delete(n); el.className='nchip';}
-      else{selNiv.add(n); el.className=`nchip on-${n}`;}
+    const el = document.createElement('span');
+    el.className = `chip chip-nivel active-${n}`;
+    el.textContent = n;
+    el.onclick = ()=>{
+      if(selSet.has(n)){ if(selSet.size===1) return; selSet.delete(n); el.className='chip chip-nivel'; }
+      else{ selSet.add(n); el.className=`chip chip-nivel active-${n}`; }
+      onChange();
+    };
+    wrap.appendChild(el);
+  });
+}
+
+function buildFilters(){
+
+  // ── Vocab: nivel ──
+  buildNivelChips('vocab-nivel-chips', selNivVocab, rebuildPools);
+
+  // ── Vocab: registre (pill style) ──
+  const regSet = new Set();
+  (DB.categories||[]).forEach(cat=>cat.subcategories.forEach(sub=>sub.mots.forEach(m=>{
+    if(m.registre) regSet.add(m.registre);
+  })));
+  allReg = [...regSet].sort();
+  selReg = new Set(allReg);
+  const rc = document.getElementById('reg-chips');
+  allReg.forEach(r=>{
+    const el = document.createElement('span');
+    el.className = 'chip chip-reg active';
+    el.textContent = REG_LBL[r] || r;
+    el.dataset.reg = r;
+    el.onclick = ()=>{
+      if(selReg.has(r)){ if(selReg.size===1) return; selReg.delete(r); el.className='chip chip-reg'; }
+      else{ selReg.add(r); el.className='chip chip-reg active'; }
       rebuildPools();
     };
-    ng.appendChild(el);
+    rc.appendChild(el);
   });
 
-  // Category chips (vocab)
+  // ── Vocab: categoría ──
   allCats = (DB.categories||[]).map(c=>c.nom);
   selCats = new Set(allCats);
-  const cc=document.getElementById('cat-chips');
+  const cc = document.getElementById('cat-chips');
   allCats.forEach(cat=>{
-    const el=document.createElement('div');
+    const el = document.createElement('div');
     el.className='cat-chip on'; el.dataset.cat=cat;
     el.innerHTML=`<span>${cat}</span><span class="cat-chip-dot"></span>`;
     el.onclick=()=>{
@@ -517,109 +601,176 @@ function buildFilters(){
     cc.appendChild(el);
   });
 
-  // Register chips
-  const rc=document.getElementById('reg-chips');
-  REGS.forEach(r=>{
-    const el=document.createElement('div');
-    el.className='rchip on';
-    el.innerHTML=`<span>${REG_LBL[r]}</span><span class="rchip-dot"></span>`;
+  // ── Vocab: tipo de palabra ──
+  const typeSet = new Set();
+  (DB.categories||[]).forEach(cat=>cat.subcategories.forEach(sub=>sub.mots.forEach(m=>{
+    if(m.type_mot) typeSet.add(m.type_mot);
+  })));
+  allTypes = [...typeSet].sort();
+  selTypes = new Set(allTypes);
+  const tc = document.getElementById('type-chips');
+  allTypes.forEach(typ=>{
+    const el = document.createElement('div');
+    el.className='cat-chip on'; el.dataset.typ=typ;
+    el.innerHTML=`<span>${typ}</span><span class="cat-chip-dot"></span>`;
     el.onclick=()=>{
-      if(selReg.has(r)){if(selReg.size===1) return; selReg.delete(r); el.classList.remove('on');}
-      else{selReg.add(r); el.classList.add('on');}
+      if(selTypes.has(typ)){if(selTypes.size===1) return; selTypes.delete(typ); el.classList.remove('on');}
+      else{selTypes.add(typ); el.classList.add('on');}
       rebuildPools();
     };
-    rc.appendChild(el);
+    tc.appendChild(el);
+  });
+
+  // ── Verb: nivel palabra ──
+  buildNivelChips('verb-nivel-word-chips', selNivVerb, rebuildPools);
+
+  // ── Verb: nivel tiempo ──
+  buildNivelChips('verb-nivel-tense-chips', selNivTense, rebuildPools);
+
+  // ── Verb: categoría ──
+  allVerbCats = (DB.categories||[]).filter(c=>
+    c.subcategories.some(s=>s.mots.some(m=>m.type_mot==='verbe'))
+  ).map(c=>c.nom);
+  selVerbCats = new Set(allVerbCats);
+  const vc = document.getElementById('verb-cat-chips');
+  allVerbCats.forEach(cat=>{
+    const el = document.createElement('div');
+    el.className='cat-chip on'; el.dataset.vcat=cat;
+    el.innerHTML=`<span>${cat}</span><span class="cat-chip-dot"></span>`;
+    el.onclick=()=>{
+      if(selVerbCats.has(cat)){if(selVerbCats.size===1) return; selVerbCats.delete(cat); el.classList.remove('on');}
+      else{selVerbCats.add(cat); el.classList.add('on');}
+      rebuildPools();
+    };
+    vc.appendChild(el);
   });
 }
 
+// ── Toggle helpers ──
 function toggleAllCats(){
   const chips=document.querySelectorAll('#cat-chips .cat-chip');
   const allOn = selCats.size === allCats.length;
-  if(allOn){
-    // turn all off except first
-    selCats=new Set([allCats[0]]);
-    chips.forEach((el,i)=>{ el.classList.toggle('on', i===0); });
-  } else {
-    selCats=new Set(allCats);
-    chips.forEach(el=>el.classList.add('on'));
-  }
+  if(allOn){ selCats=new Set([allCats[0]]); chips.forEach((el,i)=>el.classList.toggle('on',i===0)); }
+  else      { selCats=new Set(allCats);      chips.forEach(el=>el.classList.add('on')); }
+  rebuildPools();
+}
+
+function toggleAllTypes(){
+  const chips=document.querySelectorAll('#type-chips .cat-chip');
+  const allOn = selTypes.size === allTypes.length;
+  if(allOn){ selTypes=new Set([allTypes[0]]); chips.forEach((el,i)=>el.classList.toggle('on',i===0)); }
+  else      { selTypes=new Set(allTypes);      chips.forEach(el=>el.classList.add('on')); }
+  rebuildPools();
+}
+
+function toggleAllVerbCats(){
+  const chips=document.querySelectorAll('#verb-cat-chips .cat-chip');
+  const allOn = selVerbCats.size === allVerbCats.length;
+  if(allOn){ selVerbCats=new Set([allVerbCats[0]]); chips.forEach((el,i)=>el.classList.toggle('on',i===0)); }
+  else      { selVerbCats=new Set(allVerbCats);      chips.forEach(el=>el.classList.add('on')); }
   rebuildPools();
 }
 
 function isVerbMode(){ return ['tense_id','conj_choice','conj_write'].includes(curMode); }
 
+// ════════════════════════════════════════════════════════════════
+// POOLS
+// ════════════════════════════════════════════════════════════════
 function rebuildPools(){
   if(!DB) return;
 
-  // Vocab pool (with category filter)
+  // ── Vocab pool ──
   vocabPool=[];
   DB.categories.forEach(cat=>{
     if(!selCats.has(cat.nom)) return;
     cat.subcategories.forEach(sub=>sub.mots.forEach(m=>{
-      if(selNiv.has(m.niveau) && selReg.has(m.registre))
+      if(m.type_mot === 'verbe') return;
+      if(selNivVocab.has(m.niveau) && selReg.has(m.registre) && selTypes.has(m.type_mot))
         vocabPool.push({...m, _cat:cat.nom, _sub:sub.nom});
     }));
   });
 
-  // Verb entries
+  // ── Verb pool: only verbs that have conjugation data ──
+  // selNivVerb  → filters the verb word itself
+  // selNivTense → filters the tense level
   verbEntries=[];
   const tLevels = DB.meta?.tense_levels || {};
-  (DB.conjugaisons||[]).forEach(verb=>{
-    if(!selNiv.has(verb.niveau)) return;
-    const conj=verb.conjugaisons||{};
-    Object.entries(conj).forEach(([tense,data])=>{
-      if(!data) return;
-      const tLv=tLevels[tense]||'B1';
-      if(!selNiv.has(tLv)) return;
-      const isPersonal = typeof data==='object' && 'je' in data;
-      const isImperat  = typeof data==='object' && 'tu' in data && !('je' in data) && 'forme' in (data.tu||{});
-      const isFlat     = typeof data==='object' && 'forme' in data;
-      if(isPersonal){
-        PERSONS.forEach(p=>{
-          if(data[p]) verbEntries.push({verb, tense, tLv, person:p, formData:data[p], isImperat:false});
+  const verbsWithConj = new Set(); // track distinct verbs that yield at least one entry
+  DB.categories.forEach(cat=>{
+    if(!selVerbCats.has(cat.nom)) return;
+    cat.subcategories.forEach(sub=>{
+      sub.mots.forEach(m=>{
+        if(m.type_mot !== 'verbe') return;
+        // Skip verbs without any conjugation data
+        const conjKeys = Object.keys(m.conjugaisons || {});
+        if(!conjKeys.length) return;
+        if(!selNivVerb.has(m.niveau)) return;   // filter by word level
+        const verb = {
+          infinitif:    m.mot,
+          ipa_infinitif: m.ipa || '',
+          groupe:       m.groupe,
+          auxiliaire:   m.auxiliaire,
+          traductions:  Array.isArray(m.traductions) ? m.traductions : [m.traductions||''],
+          niveau:       m.niveau,
+          registre:     m.registre,
+          conjugaisons: m.conjugaisons || {},
+          _cat: cat.nom, _sub: sub.nom
+        };
+        const conj = verb.conjugaisons;
+        let addedAny = false;
+        Object.entries(conj).forEach(([tense,data])=>{
+          if(!data) return;
+          const tLv = tLevels[tense] || 'B1';
+          if(!selNivTense.has(tLv)) return;     // filter by tense level
+          const isPersonal = typeof data==='object' && 'je' in data;
+          const isImperat  = typeof data==='object' && 'tu' in data && !('je' in data) && 'forme' in (data.tu||{});
+          const isFlat     = typeof data==='object' && 'forme' in data;
+          if(isPersonal){
+            PERSONS.forEach(p=>{
+              if(data[p]){ verbEntries.push({verb, tense, tLv, person:p, formData:data[p], isImperat:false}); addedAny=true; }
+            });
+          } else if(isImperat){
+            IMP_PERSONS.forEach(p=>{
+              if(data[p]){ verbEntries.push({verb, tense, tLv, person:p, formData:data[p], isImperat:true}); addedAny=true; }
+            });
+          } else if(isFlat){
+            verbEntries.push({verb, tense, tLv, person:null, formData:data, isImperat:false}); addedAny=true;
+          }
         });
-      } else if(isImperat){
-        IMP_PERSONS.forEach(p=>{
-          if(data[p]) verbEntries.push({verb, tense, tLv, person:p, formData:data[p], isImperat:true});
-        });
-      } else if(isFlat){
-        verbEntries.push({verb, tense, tLv, person:null, formData:data, isImperat:false});
-      }
+        if(addedAny) verbsWithConj.add(m.mot);
+      });
     });
   });
 
   const pool = isVerbMode() ? verbEntries : vocabPool;
   const n    = pool.length;
-  document.getElementById('db-status').innerHTML=`DB: <strong>${n}</strong> ${isVerbMode()?'entradas verbales':'palabras'}`;
+  let statusHtml;
+  if(isVerbMode()){
+    const nVerbs = verbsWithConj.size;
+    statusHtml = `DB: <strong>${nVerbs}</strong> verbo${nVerbs!==1?'s':''} · <strong>${n}</strong> entradas`;
+  } else {
+    statusHtml = `DB: <strong>${n}</strong> palabras`;
+  }
+  document.getElementById('db-status').innerHTML = statusHtml;
   document.getElementById('start-btn').disabled = n<4;
 
-  // Show/hide vocab-only filters
-  const vOnly = !isVerbMode();
-  document.getElementById('cat-section').style.display  = vOnly ? '' : 'none';
-  document.getElementById('reg-section').style.display  = vOnly ? '' : 'none';
+  // Show/hide filter panels
+  document.getElementById('vocab-filters').style.display = isVerbMode() ? 'none' : '';
+  document.getElementById('verb-filters').style.display  = isVerbMode() ? '' : 'none';
 }
 
 // ════════════════════════════════════════════════════════════════
 // MODE SWITCH
 // ════════════════════════════════════════════════════════════════
 function switchMode(m, btn){
-  const newGroup = btn.dataset.group; // 'vocab' | 'verb'
+  const newGroup = btn.dataset.group;
   const groupChanged = newGroup !== curGroup;
-
   curMode  = m;
   curGroup = newGroup;
 
-  // Update active tab styling
-  document.querySelectorAll('.mode-tab').forEach(t=>{
-    t.classList.remove('active-vocab','active-verb');
-  });
+  document.querySelectorAll('.mode-tab').forEach(t=>t.classList.remove('active-vocab','active-verb'));
   btn.classList.add(newGroup==='vocab' ? 'active-vocab' : 'active-verb');
 
-  // Nivel label
-  const lbl=document.getElementById('nivel-scope-lbl');
-  lbl.innerHTML='Nivel MCER <span style="color:var(--gold);font-style:italic;font-size:9px">'+(isVerbMode()?'(verbos + tiempos)':'(vocabulario)')+'</span>';
-
-  // Reset notice
   const notice=document.getElementById('reset-notice');
   if(groupChanged){
     resetGame();
@@ -638,7 +789,6 @@ function updateModeIndicator(){
   ind.className = 'schip mode-indicator ' + (isVerbMode()?'verb-ind':'vocab-ind');
 }
 
-// Reset game state (called when switching group)
 function resetGame(){
   clearTimer();
   queue=[]; qIdx=0; score=0; errors=0; streak=0; mistakes=[];
@@ -692,7 +842,6 @@ function startGame(){
   document.getElementById('s-pool').textContent=queue.length;
   document.getElementById('game-view').style.display='';
 
-  // Style progress bar and badge by group
   const progFill=document.getElementById('prog-fill');
   progFill.className='prog-fill'+(isVerbMode()?' verb-prog':'');
 
@@ -728,7 +877,7 @@ function getArticle(word, genre){
   const startsVowel=VOWEL_RE.test(word)&&!H_ASPIRE.has(word.toLowerCase().split(' ')[0]);
   if(g==='m.') return startsVowel?"l'":'le';
   if(g==='f.') return startsVowel?"l'":'la';
-  if(g==='m./f.') return startsVowel?"l'":'le/la';
+  if(g==='inv.') return startsVowel?"l'":'le/la';
   return '';
 }
 
@@ -760,7 +909,7 @@ function renderVocab(item){
   }
 
   const exEl=document.getElementById('word-example');
-  if(item.exemple){exEl.textContent='« '+item.exemple+' »';exEl.style.display='';}
+  if(!isRev && item.exemple){exEl.textContent='« '+item.exemple+' »';exEl.style.display='';}
   else exEl.style.display='none';
 
   buildVocabMeta(item,displayGenre,showedSwap,isRev?'partial':'full');
@@ -830,7 +979,7 @@ function renderVerb(entry){
   document.getElementById('word-example').style.display='none';
   const badge=document.getElementById('cat-badge');
   badge.className='cat-badge verb-badge';
-  if(curMode==='tense_id')        renderTenseId(verb,tense,tLv,person,formData,isImperat);
+  if(curMode==='tense_id')         renderTenseId(verb,tense,tLv,person,formData,isImperat);
   else if(curMode==='conj_choice') renderConjChoice(verb,tense,tLv,person,formData,isImperat);
   else                              renderConjWrite(verb,tense,tLv,person,formData,isImperat);
 }
@@ -884,9 +1033,6 @@ function renderTenseId(verb,tense,tLv,person,formData,isImperat){
 }
 
 // ─── MODE 4 — Choose conjugation ───
-// Rules:
-//  - 3 options from the SAME verb (correct tense + other tenses or other persons)
-//  - 1 option from a DIFFERENT verb (same tense + same person)
 function renderConjChoice(verb,tense,tLv,person,formData,isImperat){
   document.getElementById('cat-badge').textContent='Conjugar: elegir forma';
   document.getElementById('mode-lbl').textContent='';
@@ -901,7 +1047,6 @@ function renderConjChoice(verb,tense,tLv,person,formData,isImperat){
   const correctForme=getFormStr(formData);
   const correctIPA  =getFormIPA(formData);
 
-  // ── 3 distractors from SAME verb, different tense/person ──
   const sameVerbForms=[];
   const conj=verb.conjugaisons||{};
   Object.entries(conj).forEach(([t,data])=>{
@@ -917,54 +1062,35 @@ function renderConjChoice(verb,tense,tLv,person,formData,isImperat){
     }
   });
 
-  // ── 1 distractor from a DIFFERENT verb, same tense + person ──
   const diffVerbForms=[];
-  (DB.conjugaisons||[]).filter(v2=>v2.infinitif!==verb.infinitif).forEach(v2=>{
-    const td=v2.conjugaisons?.[tense];
+  DB.categories.forEach(cat=>cat.subcategories.forEach(sub=>sub.mots.forEach(m=>{
+    if(m.type_mot!=='verbe'||m.mot===verb.infinitif) return;
+    const td=(m.conjugaisons||{})[tense];
     if(!td) return;
     if(person){
       const f=getFormStr(td[person]);
-      if(f&&f!==correctForme) diffVerbForms.push({form:f,label:`${v2.infinitif}`});
+      if(f&&f!==correctForme) diffVerbForms.push({form:f,label:`${m.mot}`});
     } else if(typeof td==='object'&&'forme' in td){
       const f=td.forme;
-      if(f&&f!==correctForme) diffVerbForms.push({form:f,label:`${v2.infinitif}`});
+      if(f&&f!==correctForme) diffVerbForms.push({form:f,label:`${m.mot}`});
     }
-  });
+  })));
 
-  // Pick 3 from sameVerb + 1 from diffVerb (fallback if not enough)
   const shuffSame=shuffle(sameVerbForms);
   const shuffDiff=shuffle(diffVerbForms);
-
   let d3same=shuffSame.slice(0,3);
   let d1diff=shuffDiff.slice(0,1);
-
-  // Deduplicate forms
   const usedForms=new Set([correctForme,...d3same.map(x=>x.form),...d1diff.map(x=>x.form)]);
-
-  // If we don't have 3 same-verb, fill with diff-verb
   if(d3same.length<3){
     const extra=shuffDiff.filter(x=>!usedForms.has(x.form)).slice(0,3-d3same.length);
-    d3same=[...d3same,...extra];
-    extra.forEach(x=>usedForms.add(x.form));
+    d3same=[...d3same,...extra]; extra.forEach(x=>usedForms.add(x.form));
     d1diff=shuffDiff.filter(x=>!usedForms.has(x.form)).slice(0,1);
   }
-  if(d1diff.length<1){
-    // fallback: just pick from shuffSame beyond the 3 already used
-    const extra=shuffSame.filter(x=>!usedForms.has(x.form)).slice(0,1);
-    d1diff=extra;
-  }
-
+  if(d1diff.length<1) d1diff=shuffSame.filter(x=>!usedForms.has(x.form)).slice(0,1);
   const distractorObjs=[...d3same.slice(0,3),...d1diff.slice(0,1)];
-  // Make sure we have 3 total distractors
-  while(distractorObjs.length<3){
-    distractorObjs.push({form:'—'+distractorObjs.length,label:''});
-  }
+  while(distractorObjs.length<3) distractorObjs.push({form:'—'+distractorObjs.length,label:''});
 
-  const allObjs=shuffle([
-    {form:correctForme, label:'', isCorrect:true},
-    ...distractorObjs.slice(0,3)
-  ]);
-
+  const allObjs=shuffle([{form:correctForme, label:'', isCorrect:true},...distractorObjs.slice(0,3)]);
   const letters=['A','B','C','D'];
   const grid=document.getElementById('opts-grid');
   grid.innerHTML='';
@@ -1061,7 +1187,7 @@ function checkWrite(){
 }
 
 // ════════════════════════════════════════════════════════════════
-// SHARED OPTION RENDERER (vocab + tense_id)
+// SHARED OPTION RENDERER
 // ════════════════════════════════════════════════════════════════
 function renderOpts(opts,correct,onAnswer){
   const letters=['A','B','C','D'];
