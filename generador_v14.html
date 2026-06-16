@@ -1,0 +1,1923 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Générateur v13 — Dictionnaire Français</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0E1117;--ink2:#1C2333;--ink3:#2A3347;
+  --gold:#C9A84C;--gold-light:#E8C97E;--gold-pale:#FAF0D7;
+  --cream:#F7F3EC;--white:#FFFFFF;
+  --green:#2A6048;--green-light:#3D8C6A;
+  --red:#B33A3A;--red-light:#C0392B;
+  --border:rgba(201,168,76,.25);--border2:rgba(201,168,76,.12);
+  --gray:#8892A4;--gray2:#CDD3DE;
+  --r:14px;--tr:.2s cubic-bezier(.4,0,.2,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--cream);min-height:100vh}
+
+/* HEADER */
+header{background:linear-gradient(135deg,var(--ink) 0%,var(--ink2) 100%);border-bottom:1px solid var(--border);padding:32px 48px 24px;display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap}
+.header-left{flex:1;min-width:280px}
+.flag{font-size:28px;margin-bottom:8px}
+h1{font-family:'Playfair Display',serif;font-size:clamp(22px,4vw,34px);font-weight:700;color:var(--gold-light);line-height:1.1;letter-spacing:-.5px;margin-bottom:6px}
+.subtitle{font-size:12px;color:var(--gray);text-transform:uppercase;letter-spacing:2px}
+.header-stats{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.stat-pill{background:var(--ink3);border:1px solid var(--border);border-radius:99px;padding:6px 14px;font-size:12px;color:var(--gray);display:flex;align-items:center;gap:6px}
+.stat-pill strong{color:var(--gold-light);font-weight:600}
+
+/* TAB NAV */
+.tab-nav{display:flex;gap:4px;padding:0 48px;background:var(--ink2);border-bottom:1px solid var(--border2)}
+.tab-nav-btn{padding:12px 20px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:var(--gray);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:7px;margin-bottom:-1px}
+.tab-nav-btn:hover{color:var(--cream)}
+.tab-nav-btn.active{color:var(--gold-light);border-bottom-color:var(--gold)}
+
+/* LAYOUT */
+.layout{display:grid;grid-template-columns:300px 1fr;min-height:calc(100vh - 130px)}
+
+/* SIDEBAR */
+.sidebar{background:var(--ink2);border-right:1px solid var(--border2);padding:28px 0;position:sticky;top:0;height:calc(100vh - 130px);overflow-y:auto}
+.sidebar::-webkit-scrollbar{width:4px}.sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px}
+.sidebar-section{padding:0 20px 20px}
+.sidebar-title{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--gray);margin-bottom:12px;padding:0 4px}
+.filter-group{margin-bottom:18px}
+.filter-label{font-size:11px;font-weight:500;color:var(--gray2);margin-bottom:8px;display:block}
+.chips{display:flex;flex-wrap:wrap;gap:5px}
+.chip{padding:4px 10px;border-radius:99px;font-size:11px;font-weight:500;cursor:pointer;border:1.5px solid transparent;transition:all var(--tr);user-select:none}
+.chip-nivel{background:rgba(255,255,255,.05);color:var(--gray2);border-color:rgba(255,255,255,.1)}
+.chip-nivel.active-A1{background:rgba(45,125,70,.2);color:#6BCB8B;border-color:#2D7D46}
+.chip-nivel.active-A2{background:rgba(62,158,92,.2);color:#6BCB8B;border-color:#3E9E5C}
+.chip-nivel.active-B1{background:rgba(26,92,168,.2);color:#78AAEC;border-color:#1A5CA8}
+.chip-nivel.active-B2{background:rgba(41,121,208,.2);color:#78AAEC;border-color:#2979D0}
+.chip-nivel.active-C1{background:rgba(123,63,160,.2);color:#C084E8;border-color:#7B3FA0}
+.chip-nivel.active-C2{background:rgba(156,82,199,.2);color:#C084E8;border-color:#9C52C7}
+.chip-reg{background:rgba(255,255,255,.05);color:var(--gray2);border-color:rgba(255,255,255,.1)}
+.chip-reg.active{background:rgba(201,168,76,.15);color:var(--gold-light);border-color:var(--gold)}
+.divider-line{height:1px;background:var(--border2);margin:4px 20px 18px}
+.cat-tree{padding:0 12px}
+.cat-btn{width:100%;text-align:left;background:none;border:none;padding:7px 10px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;color:var(--gray2);cursor:pointer;display:flex;align-items:center;gap:8px;transition:all var(--tr)}
+.cat-btn:hover{background:rgba(255,255,255,.05);color:var(--cream)}
+.cat-btn.active{background:rgba(201,168,76,.12);color:var(--gold-light)}
+.cat-btn .cat-check{width:14px;height:14px;min-width:14px;border-radius:4px;border:1.5px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:9px;transition:all var(--tr)}
+.cat-btn.active .cat-check{background:var(--gold);border-color:var(--gold);color:var(--ink)}
+.cat-count{margin-left:auto;font-size:10px;color:var(--gray);background:rgba(255,255,255,.05);padding:1px 6px;border-radius:99px}
+.select-all-btn{display:block;width:calc(100% - 24px);margin:0 12px 8px;padding:6px 10px;background:none;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:11px;color:var(--gold);cursor:pointer;text-align:center;transition:all var(--tr)}
+.select-all-btn:hover{background:rgba(201,168,76,.08)}
+
+/* MAIN */
+.main{padding:30px 38px}
+.preview-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;gap:14px;flex-wrap:wrap}
+.preview-title{font-family:'Playfair Display',serif;font-size:19px;color:var(--gold-light)}
+.preview-meta{font-size:13px;color:var(--gray);margin-top:2px}
+.export-btns{display:flex;gap:10px;flex-wrap:wrap}
+.btn{display:flex;align-items:center;gap:8px;padding:10px 18px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all var(--tr);white-space:nowrap}
+.btn:disabled{opacity:.4;cursor:default}
+.btn-excel{background:var(--ink3);color:var(--gold);border:1px solid var(--border)}
+.btn-excel:not(:disabled):hover{border-color:var(--gold);color:var(--gold-light);transform:translateY(-1px)}
+.btn-csv{background:var(--ink3);color:var(--gold);border:1px solid var(--border)}
+.btn-csv:not(:disabled):hover{border-color:var(--gold);color:var(--gold-light);transform:translateY(-1px)}
+.btn-export-json{background:var(--ink3);color:var(--gold);border:1px solid var(--border)}
+.btn-export-json:not(:disabled):hover{border-color:var(--gold);color:var(--gold-light);transform:translateY(-1px)}
+.btn-export-json:disabled{opacity:.4;cursor:default}
+.btn-icon{font-size:16px}
+.progress-wrap{height:2px;background:var(--border2);border-radius:99px;margin-bottom:22px;overflow:hidden;opacity:0;transition:opacity .3s}
+.progress-wrap.visible{opacity:1}
+.progress-bar{height:100%;background:var(--gold);border-radius:99px;transition:width .3s ease}
+.table-wrap{background:var(--ink2);border:1px solid var(--border2);border-radius:14px;overflow:hidden}
+.preview-cat{border-bottom:1px solid var(--border2)}.preview-cat:last-child{border-bottom:none}
+.preview-cat-header{padding:11px 18px;background:linear-gradient(90deg,rgba(201,168,76,.08) 0%,transparent 100%);border-bottom:1px solid var(--border2);display:flex;align-items:center;gap:10px}
+.preview-cat-name{font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:var(--gold-light)}
+.preview-cat-count{font-size:11px;color:var(--gray);background:var(--ink3);padding:2px 8px;border-radius:99px}
+.preview-sub{border-bottom:1px solid var(--border2)}.preview-sub:last-child{border-bottom:none}
+.preview-sub-header{padding:7px 18px;background:rgba(255,255,255,.02);display:flex;align-items:center}
+.preview-sub-name{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--gray)}
+.col-header-row{display:grid;grid-template-columns:170px 100px 58px 68px 150px 150px 1fr 48px 68px;padding:5px 18px;background:var(--ink3);border-bottom:1px solid var(--border2)}
+.col-h{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--gray);padding:2px 3px}
+.preview-row{display:grid;grid-template-columns:170px 100px 58px 68px 150px 150px 1fr 48px 68px;padding:5px 18px;border-bottom:1px solid rgba(255,255,255,.03);align-items:center;transition:background var(--tr)}
+.preview-row:last-child{border-bottom:none}.preview-row:hover{background:rgba(255,255,255,.03)}
+.cell{padding:3px 3px;font-size:12px;color:var(--cream);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cell-mot{font-weight:600;color:var(--white)}
+.cell-ipa{font-family:'DM Mono',monospace;font-size:10px;color:var(--gold)}
+.cell-genre{font-size:11px;color:var(--gold-light)}
+.badge-nivel{display:inline-block;padding:2px 5px;border-radius:4px;font-size:12px;font-weight:700}
+.badge-A1{background:rgba(45,125,70,.2);color:#6BCB8B}.badge-A2{background:rgba(62,158,92,.2);color:#6BCB8B}
+.badge-B1{background:rgba(26,92,168,.2);color:#78AAEC}.badge-B2{background:rgba(41,121,208,.2);color:#78AAEC}
+.badge-C1{background:rgba(123,63,160,.2);color:#C084E8}.badge-C2{background:rgba(156,82,199,.2);color:#C084E8}
+.badge-reg{display:inline-block;padding:2px 5px;border-radius:4px;font-size:12px;font-weight:500}
+.badge-standard{background:rgba(74,85,104,.3);color:var(--gray2)}.badge-familier{background:rgba(192,86,33,.2);color:#F6A87A}
+.badge-soutenu{background:rgba(43,108,176,.2);color:#90CDF4}.badge-technique{background:rgba(112,36,89,.2);color:#D6A4C4}
+.empty-state{padding:56px 20px;text-align:center;color:var(--gray)}
+.empty-state-icon{font-size:38px;margin-bottom:10px}.empty-state-text{font-size:14px}
+
+/* ── EDICIÓN PALABRAS ───────────────────────────────────────── */
+.btn-words-edit{display:flex;align-items:center;gap:6px;padding:8px 16px;background:var(--ink3);border:1px solid var(--border2);border-radius:9px;color:var(--cream);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;white-space:nowrap}
+.btn-words-edit:hover,.btn-words-edit.active{background:rgba(201,168,76,.15);border-color:var(--gold);color:var(--gold-light)}
+.btn-words-save{display:none;align-items:center;gap:6px;padding:8px 16px;background:var(--gold);border:none;border-radius:9px;color:var(--ink);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap}
+.btn-words-save:hover{background:var(--gold-light);transform:translateY(-1px)}
+.preview-row.editing{background:rgba(201,168,76,.04);}
+.preview-row.editing:hover{background:rgba(201,168,76,.07);}
+.col-header-row.editing{grid-template-columns:170px 100px 58px 68px 150px 150px 1fr 80px 100px}
+.preview-row.editing{grid-template-columns:170px 100px 58px 68px 150px 150px 1fr 80px 100px}
+.cell-input{background:var(--ink3);border:1px solid var(--border2);border-radius:5px;color:var(--cream);font-family:'DM Mono',monospace;font-size:11px;padding:2px 6px;width:100%;outline:none;transition:border-color .15s;min-width:0}
+.cell-input:focus{border-color:var(--gold)}
+.cell-select{background:var(--ink3);border:1px solid var(--border2);border-radius:5px;color:var(--cream);font-family:'DM Sans',sans-serif;font-size:11px;padding:2px 4px;width:100%;outline:none;transition:border-color .15s;cursor:pointer}
+.cell-select:focus{border-color:var(--gold)}
+.edit-mode-banner{display:none;align-items:center;gap:10px;padding:7px 18px;background:rgba(201,168,76,.1);border-bottom:1px solid rgba(201,168,76,.25);font-size:12px;color:var(--gold-light)}
+.edit-mode-banner.show{display:flex}
+
+/* MERGE PANEL */
+#merge-panel{display:none;padding:30px 38px}
+.merge-layout{display:grid;grid-template-columns:1fr 1fr;gap:22px;max-width:1080px}
+.merge-box{background:var(--ink2);border:1px solid var(--border2);border-radius:16px;padding:22px}
+.merge-box-title{font-family:'Playfair Display',serif;font-size:15px;color:var(--gold-light);margin-bottom:5px;display:flex;align-items:center;gap:8px}
+.merge-box-sub{font-size:12px;color:var(--gray);margin-bottom:16px;line-height:1.55}
+.drop-zone{border:2px dashed var(--border);border-radius:12px;padding:28px 18px;text-align:center;cursor:pointer;transition:all .2s;position:relative}
+.drop-zone:hover,.drop-zone.drag-over{border-color:var(--gold);background:rgba(201,168,76,.06)}
+.drop-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.drop-icon{font-size:30px;margin-bottom:7px}
+.drop-text{font-size:13px;color:var(--gray2)}.drop-text strong{color:var(--gold-light)}
+.drop-hint{font-size:11px;color:var(--gray);margin-top:3px}
+.merge-log{margin-top:14px;background:var(--ink3);border-radius:10px;padding:12px 14px;font-size:12px;line-height:1.7;display:none;max-height:260px;overflow-y:auto}
+.merge-log.show{display:block}.merge-log::-webkit-scrollbar{width:3px}.merge-log::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px}
+.log-added{color:#5EC48A}.log-updated{color:#78AAEC}.log-ignored{color:var(--gray)}.log-error{color:#E07070}
+.log-section{color:var(--gold-light);font-weight:600;margin-top:4px}
+.log-summary{margin-top:8px;padding-top:8px;border-top:1px solid var(--border2);color:var(--gold-light);font-weight:600}
+.db-status-card{background:var(--ink3);border-radius:10px;padding:12px 14px;margin-bottom:14px}
+.db-name{font-size:13px;font-weight:600;color:var(--cream);margin-bottom:5px}
+.db-stats{display:flex;gap:10px;flex-wrap:wrap}
+.db-stat-pill{background:var(--ink2);border:1px solid var(--border2);border-radius:99px;padding:2px 9px;font-size:11px;color:var(--gray)}
+.db-stat-pill strong{color:var(--gold-light);font-weight:600}
+.merge-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
+.valid-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:600;margin-top:7px}
+.valid-ok{background:rgba(30,102,65,.2);color:#5EC48A;border:1px solid rgba(46,153,96,.3)}
+.valid-err{background:rgba(139,31,31,.2);color:#E07070;border:1px solid rgba(192,57,43,.3)}
+
+
+/* MANAGE PANEL VISUAL */
+#manage-panel{display:none}
+.manage-layout{display:grid;grid-template-columns:340px 1fr;gap:24px}
+.manage-sidebar,.manage-main,.action-group,.manage-word-list,.sel-info{background:var(--ink2);border:1px solid var(--border2);border-radius:16px}
+.manage-sidebar{padding:18px}
+.manage-sidebar-header{font-family:'Playfair Display',sans-serif;color:var(--gold-light);margin-bottom:12px}
+.manage-main{padding:20px}
+.sel-info{font-family:'Playfair Display',sans-serif;padding:16px;margin-bottom:16px;background:linear-gradient(135deg,rgba(201,168,76,.08),transparent)}
+.sel-name{font-size:20px;font-weight:700;color:var(--gold-light)}
+.sel-meta{font-family:'DM Sans',sans-serif;color:var(--gray);font-size:12px}
+.action-groups{display:grid;gap:14px}
+.action-group{padding:16px}
+.action-group-title{color:var(--gold-light);font-weight:700;margin-bottom:10px}
+.action-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+.mg-input,.mg-select{background:var(--ink3);border:1px solid var(--border);color:var(--cream);padding:10px;border-radius:10px}
+.mg-btn{border:none;border-radius:10px;padding:10px 14px;cursor:pointer}
+.mg-btn-gold{background:var(--gold);color:var(--ink)}
+.mg-btn-red{background:var(--red);color:white}
+.mg-btn-gray{background:var(--ink3);color:var(--cream)}
+.mg-btn-blue{background:var(--green-light);color:white}
+.manage-word-list{margin-top:16px;padding:16px}
+.mwl-row{display:grid;grid-template-columns:140px 120px 1fr 60px;gap:10px;padding:8px;border-bottom:1px solid var(--border2);font-size: 12px;}
+.mwl-preview-row{display:block}
+
+.mg-modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9999;align-items:center;justify-content:center}
+.mg-modal-bg.show{display:flex}
+.mg-modal{width:min(560px,92vw);background:var(--ink2);border:1px solid var(--border);border-radius:16px;padding:22px;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.mg-modal-title{font-size:20px;font-weight:700;color:var(--gold-light);margin-bottom:12px}
+.mg-modal-body{line-height:1.6;color:var(--cream)}
+.mg-modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px}
+
+.mt-cat{font-size:15px;}
+.mt-cat.selected{font-size:16px;color:#78AAEC;}
+.mt-sub{font-size:12px;color:#F7F3EC;}
+.mt-sub.selected{font-size:13px;color:#78AAEC;}
+
+/* TOAST */
+.toast{position:fixed;bottom:22px;right:22px;background:var(--ink2);border:1px solid var(--border);border-radius:12px;padding:11px 18px;font-size:13px;color:var(--cream);display:flex;align-items:center;gap:9px;z-index:999;transform:translateY(80px);opacity:0;transition:all .3s cubic-bezier(.4,0,.2,1);box-shadow:0 8px 32px rgba(0,0,0,.5);max-width:320px}
+.toast.show{transform:translateY(0);opacity:1}.toast-icon{font-size:17px}
+
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{position:static;height:auto}
+  .col-header-row,.preview-row{grid-template-columns:130px 90px 50px 58px 110px 110px 1fr 38px 58px}
+  .main,.merge-panel-inner{padding:18px}
+  header{padding:22px 18px}
+  .tab-nav{padding:0 18px}
+  .merge-layout{grid-template-columns:1fr}
+}
+
+/* ── ORDENAR CATEGORÍAS / SUBS ─────────────────────────────── */
+.mt-cat-hd{display:flex;align-items:center;gap:6px;padding:8px 10px;border-radius:8px;cursor:pointer;transition:background var(--tr)}
+.mt-cat-hd:hover{background:rgba(255,255,255,.05)}
+.mt-cat-hd.open .chevron{transform:rotate(90deg)}
+.chevron{transition:transform .2s;font-size:10px;color:var(--gray);flex-shrink:0}
+.mt-cat-count,.mt-sub-count{font-size:10px;color:var(--gray);background:rgba(255,255,255,.05);padding:1px 6px;border-radius:99px;flex-shrink:0}
+.mt-subs{display:none;padding-left:14px}
+.mt-subs.open{display:block}
+.mt-sub{display:flex;align-items:center;gap:6px;padding:6px 10px;border-radius:7px;cursor:pointer;font-size:12px;color:var(--gray2);transition:background var(--tr)}
+.mt-sub:hover{background:rgba(255,255,255,.04);color:var(--cream)}
+.mt-sub.selected{color:var(--gold-light);background:rgba(201,168,76,.1)}
+
+.sort-btns{display:flex;flex-direction:column;gap:1px;flex-shrink:0;opacity:0;transition:opacity .15s}
+.mt-cat-hd:hover .sort-btns,.mt-sub:hover .sort-btns{opacity:1}
+.sort-btn{background:rgba(255,255,255,.08);border:none;color:var(--gray2);width:16px;height:14px;border-radius:3px;cursor:pointer;font-size:9px;line-height:1;display:flex;align-items:center;justify-content:center;padding:0;transition:background .15s}
+.sort-btn:hover{background:rgba(201,168,76,.3);color:var(--gold-light)}
+
+/* ── PESTAÑA VERBOS ─────────────────────────────────────────── */
+#verbs-panel{display:none;height:calc(100vh - 130px);overflow:hidden}
+
+/* ── VISTA LISTA ── */
+#verbs-list-view{display:flex;flex-direction:column;height:100%;padding:28px 38px}
+.verbs-top-bar{display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap}
+.verbs-top-bar h2{font-family:'Playfair Display',serif;font-size:19px;color:var(--gold-light);flex:1}
+.verbs-search-input{background:var(--ink2);border:1px solid var(--border);color:var(--cream);padding:9px 16px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:13px;min-width:220px;outline:none;transition:border-color .2s}
+.verbs-search-input:focus{border-color:var(--gold)}
+.verbs-count{font-size:12px;color:var(--gray);white-space:nowrap}
+.verbs-alpha-list{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:0}
+.verbs-alpha-list::-webkit-scrollbar{width:4px}
+.verbs-alpha-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px}
+.verb-alpha-group{margin-bottom:4px;background:var(--ink2);border:1px solid var(--border2);border-radius:16px}
+.verb-alpha-letter{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--gold);padding:8px 14px 4px;display:block}
+.verb-list-item{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:9px;cursor:pointer;transition:background var(--tr);border:1px solid transparent}
+.verb-list-group{background:var(--ink3);border-bottom-right-radius: 16px;border-bottom-left-radius: 16px}
+.verb-list-item:hover{background:rgba(255,255,255,.04);border-color:var(--border2)}
+.vli-inf{font-family:'Playfair Display',serif;font-size:12px;color:var(--gold-light);min-width:160px}
+.vli-trad{font-size:12px;color:var(--cream);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vli-tags{display:flex;gap:5px;flex-shrink:0}
+.vli-tag{font-size:12px;color:var(--cream);background:var(--ink3);padding:2px 7px;border-radius:99px;border:1px solid var(--border2)}
+.vli-arrow{color:var(--gray);font-size:12px;flex-shrink:0;transition:color .15s}
+.verb-list-item:hover .vli-arrow{color:var(--gold)}
+.verbs-empty{padding:56px 20px;text-align:center;color:var(--gray)}
+.verbs-empty-icon{font-size:36px;margin-bottom:10px}
+
+/* ── VISTA DETALLE ── */
+#verbs-detail-view{display:none;height:100%;flex-direction:column;overflow:hidden}
+.verb-detail-topbar{display:flex;align-items:center;gap:12px;padding:16px 38px;background:var(--ink2);border-bottom:1px solid var(--border2);flex-shrink:0;flex-wrap:wrap}
+.btn-back{display:flex;align-items:center;gap:6px;padding:7px 14px;background:var(--ink3);border:1px solid var(--border2);border-radius:8px;color:var(--cream);font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;transition:all .15s;white-space:nowrap}
+.btn-back:hover{border-color:var(--gold);color:var(--gold)}
+.verb-detail-inf{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--gold-light)}
+.verb-detail-inf-ipa{font-family:'DM Mono',monospace;font-size:14px;color:var(--gold);padding-top: 6px}
+.verb-detail-meta{display:flex;gap:8px;flex:1;align-items:center}
+.vd-tag{font-size:12px;color:var(--cream);background:var(--ink3);padding:3px 9px;border-radius:99px;border:1px solid var(--border2)}
+.vd-aux{font-size:12px;color:var(--cream);background:var(--ink3);padding:3px 9px;border-radius:99px;border:1px solid var(--border2)}
+.vd-trad{font-size:13px;color:var(--cream)}
+.verb-detail-actions{display:flex;gap:8px;flex-shrink:0}
+.btn-edit-toggle{display:flex;align-items:center;gap:6px;padding:8px 16px;background:var(--ink3);border:1px solid var(--border2);border-radius:9px;color:var(--cream);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:all .2s}
+.btn-edit-toggle:hover,.btn-edit-toggle.active{background:rgba(201,168,76,.15);border-color:var(--gold);color:var(--gold-light)}
+.btn-save-conj{display:flex;align-items:center;gap:6px;padding:8px 16px;background:var(--gold);border:none;border-radius:9px;color:var(--ink);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;display:none}
+.btn-save-conj:hover{background:var(--gold-light);transform:translateY(-1px)}
+.verb-detail-body{flex:1;overflow-y:auto;padding:24px 38px}
+.verb-detail-body::-webkit-scrollbar{width:4px}
+.verb-detail-body::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px}
+.conj-grid{display:grid;grid-template-columns: minmax(300px,1fr) minmax(300px,1fr);;gap:14px}
+.conj-tense{background:var(--ink2);border:1px solid var(--border2);border-radius:12px;padding:14px 16px;transition:border-color .2s}
+.conj-tense.editing{border-color:rgba(201,168,76,.4)}
+.conj-tense-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--gold);margin-bottom:10px}
+.conj-row{display:flex;gap:8px;font-size:12px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.04);align-items:center}
+.conj-row:last-child{border-bottom:none}
+.conj-pron{color:var(--gray);min-width:50px;font-size:11px;flex-shrink:0}
+.conj-form{color:var(--cream);flex-shrink:0}
+.conj-ipa{color:var(--gold);flex:1}
+.conj-input{background:var(--ink3);border:1px solid var(--border2);border-radius:5px;color:var(--cream);font-family:'DM Mono',monospace;font-size:12px;padding:2px 7px;width:100%;outline:none;transition:border-color .15s}
+.conj-input:focus{border-color:var(--gold)}
+.conj-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.btn-verb-nav{display:flex;align-items:center;gap:5px;padding:6px 12px;background:var(--ink3);border:1px solid var(--border2);border-radius:7px;color:var(--gray2);font-family:'DM Sans',sans-serif;font-size:11px;cursor:pointer;transition:all .15s}
+.btn-verb-nav:hover:not(:disabled){border-color:var(--gold);color:var(--gold)}
+.btn-verb-nav:disabled{opacity:.3;cursor:default}
+.verb-nav-label{font-size:12px;color:var(--gray);font-family:'Playfair Display',serif}
+.verb-list-item.no-conj{opacity:.38;cursor:default;pointer-events:none}
+.verb-list-item.no-conj .vli-arrow{display:none}
+.vli-no-conj-badge{font-size:10px;color:var(--gray);background:rgba(255,255,255,.05);padding:2px 7px;border-radius:99px;border:1px solid rgba(255,255,255,.08);flex-shrink:0}
+.btn-hide-no-conj{display:flex;align-items:center;gap:6px;padding:7px 13px;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:var(--gray2);transition:all .2s;white-space:nowrap}
+.btn-hide-no-conj.active{background:rgba(201,168,76,.12);border-color:var(--gold);color:var(--gold-light)}
+
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <div class="flag">🇫🇷</div>
+    <h1>Générateur de Dictionnaire</h1>
+    <p class="subtitle">Exporta el vocabulario · Amplía la base de datos</p>
+  </div>
+  <div class="header-stats">
+    <div class="stat-pill">Palabras visibles <strong id="stat-words">0</strong></div>
+    <div class="stat-pill">Categorías <strong id="stat-cats">0</strong></div>
+    <div class="stat-pill">Subcategorías <strong id="stat-subs">0</strong></div>
+  </div>
+</header>
+
+<nav class="tab-nav">
+  <button class="tab-nav-btn active" id="tab-gen" onclick="switchTab('gen')">🔤 Palabras</button>
+  <button class="tab-nav-btn" id="tab-verbs" onclick="switchTab('verbs')">💬 Verbos</button>
+  <button class="tab-nav-btn" id="tab-merge" onclick="switchTab('merge')">📚 Ampliar BD</button>
+  <button class="tab-nav-btn" id="tab-manage" onclick="switchTab('manage')">🗂️ Estructura</button>
+</nav>
+
+<!-- MERGE PANEL -->
+<div id="merge-panel" style="padding:30px 38px">
+  <div class="merge-layout">
+    <div class="merge-box">
+      <div class="merge-box-title">Base de datos activa</div>
+      <div class="merge-box-sub">Estado del diccionario en memoria. Exporta como JSON, Excel o CSV en cualquier momento.</div>
+      <div class="db-status-card">
+        <div class="db-name" id="merge-db-name">Sin base de datos cargada</div>
+        <div class="db-stats" id="merge-db-stats"></div>
+      </div>
+      <div class="merge-actions">
+        <button class="btn btn-export-json" style="padding:9px 14px;font-size:12px" id="btn-export-json" onclick="exportJSON()" disabled>💾 Exportar JSON</button>
+        <button class="btn btn-excel" style="padding:9px 14px;font-size:12px" id="merge-btn-excel" onclick="exportExcel()" disabled>📊 Exportar Excel</button>
+        <button class="btn btn-csv" style="padding:9px 14px;font-size:12px" id="merge-btn-csv" onclick="exportCSV()" disabled>📄 Exportar CSV</button>
+      </div>
+    </div>
+    <div class="merge-box">
+      <div class="merge-box-title">➕ Subir JSON para fusionar</div>
+      <div class="merge-box-sub">
+        Sube un <code style="color:var(--gold-light);font-family:monospace">dictionnaire.json</code> adicional.
+        Se valida el formato antes de fusionar.<br>
+        <strong style="color:var(--gold-light)">De uno en uno</strong> para evitar conflictos.
+      </div>
+      <div class="drop-zone" id="drop-zone"
+        ondragover="event.preventDefault();this.classList.add('drag-over')"
+        ondragleave="this.classList.remove('drag-over')"
+        ondrop="handleDrop(event)">
+        <input type="file" accept=".json" onchange="handleMergeFile(this)">
+        <div class="drop-icon">📂</div>
+        <div class="drop-text"><strong>Haz clic o arrastra</strong> un archivo JSON aquí</div>
+        <div class="drop-hint">Solo archivos .json — formato dictionnaire v2</div>
+      </div>
+      <div id="merge-valid-badge" style="margin-top:8px"></div>
+      <div class="merge-log" id="merge-log"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MANAGE PANEL -->
+<div id="manage-panel" style="padding:28px 40px">
+  <div class="manage-layout">
+    <!-- LEFT: Tree -->
+    <div class="manage-sidebar">
+      <div class="manage-sidebar-header">
+        Estructura <span id="mg-tree-count"></span>
+      </div>
+      <div class="manage-tree" id="mg-tree"></div>
+    </div>
+    <!-- RIGHT: Actions -->
+    <div class="manage-main" id="mg-main">
+      <!-- Selection info -->
+      <div class="sel-info" id="mg-sel-info">
+        <div class="sel-label">Selección actual</div>
+        <div class="sel-name" id="mg-sel-name">Ninguna selección</div>
+        <div class="sel-meta" id="mg-sel-meta">Haz clic en una categoría o subcategoría del árbol</div>
+      </div>
+
+      <!-- Action groups -->
+      <div class="action-groups" id="mg-actions" style="display:none">
+
+        <!-- RENOMBRAR -->
+        <div class="action-group">
+          <div class="action-group-title">✏️ Renombrar</div>
+          <div class="action-row">
+            <span class="action-label">Nuevo nombre</span>
+            <input class="mg-input" id="mg-rename-input" placeholder="Nuevo nombre…">
+            <button class="mg-btn mg-btn-gold" onclick="mgRename()">Renombrar</button>
+          </div>
+          <div class="action-row">
+            <span class="action-label">Nuevo ID</span>
+            <input class="mg-input" id="mg-rename-id" placeholder="nuevo_id (snake_case)">
+            <button class="mg-btn mg-btn-gray" onclick="mgRenameId()">Cambiar ID</button>
+          </div>
+        </div>
+
+        <!-- MOVER / FUSIONAR -->
+        <div class="action-group">
+          <div class="action-group-title">📦 Mover y fusionar</div>
+          <div id="mg-move-group">
+            <!-- Populated dynamically based on cat/sub selection -->
+          </div>
+        </div>
+
+        <!-- CREAR -->
+        <div class="action-group">
+          <div class="action-group-title">➕ Crear</div>
+          <div id="mg-create-group">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+
+        <!-- ELIMINAR -->
+        <div class="action-group">
+          <div class="action-group-title">🗑️ Eliminar</div>
+          <div class="action-row">
+            <span id="mg-delete-desc" class="action-label" style="flex:1;color:var(--gray2);font-size:11px"></span>
+            <button class="mg-btn mg-btn-red" id="mg-delete-btn" onclick="mgConfirmDelete()">Eliminar</button>
+          </div>
+          <div style="font-size:10px;color:var(--gray);margin-top:4px">
+            Una categoría vacía puede eliminarse. Una subcategoría con palabras requiere confirmación.
+          </div>
+        </div>
+      </div>
+
+      <!-- Word list (shown when subcategory selected) -->
+      <div class="manage-word-list" id="mg-word-list" style="display:none">
+        <div id="mwl-header" class="preview-cat-header">
+          <span id="mg-wl-title" class="preview-cat-name"></span>
+          <span id="mg-wl-count" class="preview-cat-count"></span>
+        </div>
+        <div id="mg-wl-rows"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM MODAL -->
+<div class="mg-modal-bg" id="mg-modal" aria-hidden="true">
+  <div class="mg-modal">
+    <div class="mg-modal-title" id="mg-modal-title">Confirmar</div>
+    <div class="mg-modal-body" id="mg-modal-body"></div>
+    <div class="mg-modal-actions">
+      <button class="mg-btn mg-btn-gray" onclick="mgModalClose()">Cancelar</button>
+      <button class="mg-btn mg-btn-red" id="mg-modal-confirm">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- GEN PANEL -->
+<div class="layout" id="gen-panel">
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-title">Filtros</div>
+      <div class="filter-group">
+        <span class="filter-label">Nivel MCER</span>
+        <div class="chips" id="nivel-chips"></div>
+      </div>
+      <div class="filter-group">
+        <span class="filter-label">Registro</span>
+        <div class="chips" id="reg-chips"></div>
+      </div>
+    </div>
+    <div class="divider-line"></div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">Categorías</div>
+    </div>
+    <button class="select-all-btn" id="select-all-btn" onclick="toggleAllCats()">Seleccionar todo</button>
+    <div class="cat-tree" id="cat-tree"></div>
+  </aside>
+
+  <main class="main">
+    <div class="preview-header">
+      <div>
+        <div class="preview-title">Vista previa</div>
+        <div class="preview-meta" id="preview-meta">Cargando…</div>
+      </div>
+      <div class="export-btns">
+        <button class="btn-words-edit" id="btn-words-edit" onclick="wordsToggleEdit()">✏️ Editar</button>
+        <button class="btn-words-save" id="btn-words-save" onclick="wordsSaveEdit()">💾 Guardar cambios</button>
+        <button class="btn-export-json btn" id="btn-json-preview" onclick="exportJSONPreview()" disabled style="padding:10px 18px">
+          <span class="btn-icon">💾</span> Exportar JSON
+        </button>
+        <button class="btn btn-excel" id="btn-excel" onclick="exportExcel()" disabled>
+          <span class="btn-icon">📊</span> Exportar Excel
+        </button>
+        <button class="btn btn-csv" id="btn-csv" onclick="exportCSV()" disabled>
+          <span class="btn-icon">📄</span> Exportar CSV
+        </button>
+      </div>
+    </div>
+    <div class="edit-mode-banner" id="edit-mode-banner">
+      ✏️ <strong>Modo edición activo</strong> — Modifica los campos directamente en la tabla. Los botones de exportar están desactivados hasta guardar.
+    </div>
+    <div class="progress-wrap" id="progress-wrap">
+      <div class="progress-bar" id="progress-bar" style="width:0%"></div>
+    </div>
+    <div class="table-wrap" id="preview-table">
+      <div class="empty-state">
+        <div class="empty-state-icon">⏳</div>
+        <div class="empty-state-text">Cargando base de datos…</div>
+      </div>
+    </div>
+  </main>
+</div>
+
+
+<!-- VERBS PANEL -->
+<div id="verbs-panel">
+
+  <!-- ── LISTA ── -->
+  <div id="verbs-list-view">
+    <div class="verbs-top-bar">
+      <h2>Verbos</h2>
+      <button class="btn-edit-toggle" id="verbs-toggle" onclick="verbsToggleConj()">Ocultar sin conjugación</button>
+      <input class="verbs-search-input" id="verbs-search" placeholder="🔍 Chercher verbe…" oninput="verbsFilter()">
+      <span class="verbs-count" id="verbs-count"></span>
+    </div>
+    <div class="verbs-alpha-list" id="verbs-alpha-list">
+      <div class="verbs-empty"><div class="verbs-empty-icon">⏳</div><div>Sin datos de verbos</div></div>
+    </div>
+  </div>
+
+  <!-- ── DETALLE ── -->
+  <div id="verbs-detail-view">
+    <div class="verb-detail-topbar">
+      <button class="btn-back" onclick="verbsBack()">← Volver a la lista</button>
+      <span class="verb-detail-inf" id="vd-inf"></span>
+      <span class="verb-detail-inf-ipa" id="vd-inf-ipa"></span>
+      <div class="verb-detail-meta" id="vd-meta"></div>
+      <div class="verb-detail-actions">
+        <button class="btn-edit-toggle" id="btn-edit-toggle" onclick="verbsToggleEdit()">✏️ Editar</button>
+        <button class="btn-save-conj" id="btn-save-conj" onclick="verbsSaveEdit()">💾 Guardar cambios</button>
+      </div>
+    </div>
+    <div class="verb-detail-body">
+      <div class="conj-nav">
+        <button class="btn-verb-nav" id="btn-prev-verb" onclick="verbsNavigate(-1)">◀ Anterior</button>
+        <span class="verb-nav-label" id="vd-nav-label"></span>
+        <button class="btn-verb-nav" id="btn-next-verb" onclick="verbsNavigate(1)">Siguiente ▶</button>
+      </div>
+      <div class="conj-grid" id="vd-conj-grid"></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast">
+  <span class="toast-icon" id="toast-icon">✓</span>
+  <span id="toast-text"></span>
+</div>
+
+<script>
+const DB_URL='dictionnaire.json';
+const NIVELES=['A1','A2','B1','B2','C1','C2'];
+const REGISTRES=['standard','familier','soutenu','technique'];
+const REG_LABELS={standard:'Estándar',familier:'Familiar',soutenu:'Culto',technique:'Técnico'};
+const ENRICHABLE=['ipa','genre','autre_genre','synonymes','exemple','type_mot','groupe','auxiliaire','conjugaisons'];
+
+let DB=null;
+let selectedNiveles=new Set(NIVELES);
+let selectedRegistres=new Set(REGISTRES);
+let selectedCats=new Set();
+
+// ── TAB SWITCHING ──────────────────────────────────────────
+// ── LOAD ──────────────────────────────────────────────────
+async function loadDB(){
+  try{
+    const r=await fetch(DB_URL);
+    if(!r.ok) throw 0;
+    DB=await r.json();
+    initUI();
+    switchTab('gen');
+  } catch {
+    showFileImport();
+    switchTab('gen');
+  }
+}
+
+function showFileImport(){
+  document.getElementById('preview-table').innerHTML=`
+    <div class="empty-state" style="padding:56px 18px">
+      <div class="empty-state-icon">📂</div>
+      <div class="empty-state-text" style="margin-bottom:18px">
+        No se encontró <code style="color:var(--gold-light);font-family:monospace">dictionnaire.json</code> en la misma carpeta.<br>
+        Importa el archivo manualmente:
+      </div>
+      <label style="display:inline-flex;align-items:center;gap:9px;padding:11px 22px;
+        background:var(--ink3);border:1.5px dashed var(--border);border-radius:10px;
+        cursor:pointer;font-size:14px;color:var(--gold-light)">
+        <span>📁</span> Seleccionar dictionnaire.json
+        <input type="file" accept=".json" style="display:none" onchange="importFile(this)">
+      </label>
+    </div>`;
+}
+
+function importFile(input){
+  const file=input.files[0]; if(!file) return;
+  const r=new FileReader();
+  r.onload=e=>{
+    try{ DB=JSON.parse(e.target.result); initUI(); showToast('✓',`BD cargada: ${getTotalWords(DB)} palabras`); }
+    catch{ showToast('✗','Error al leer el JSON',true); }
+  };
+  r.readAsText(file);
+}
+
+function getTotalWords(db){
+  return db.categories.reduce((a,c)=>a+c.subcategories.reduce((b,s)=>b+s.mots.length,0),0);
+}
+
+// ── INIT UI ───────────────────────────────────────────────
+function initUI(){
+  DB.categories.forEach(c=>selectedCats.add(c.id));
+  buildNivelChips(); buildRegChips(); buildCatTree(); renderPreview();
+}
+
+function buildNivelChips(){
+  const wrap=document.getElementById('nivel-chips');
+  wrap.innerHTML='';
+  NIVELES.forEach(n=>{
+    const el=document.createElement('span');
+    el.className=`chip chip-nivel active-${n}`; el.textContent=n; el.dataset.nivel=n;
+    el.onclick=()=>toggleNivel(n,el); wrap.appendChild(el);
+  });
+}
+
+function buildRegChips(){
+  const wrap=document.getElementById('reg-chips');
+  wrap.innerHTML='';
+  REGISTRES.forEach(r=>{
+    const el=document.createElement('span');
+    el.className='chip chip-reg active'; el.textContent=REG_LABELS[r]; el.dataset.reg=r;
+    el.onclick=()=>toggleReg(r,el); wrap.appendChild(el);
+  });
+}
+
+function buildCatTree(){
+  const tree=document.getElementById('cat-tree');
+  tree.innerHTML='';
+  DB.categories.forEach(cat=>{
+    const wc=getFilteredWords(cat).length;
+    const div=document.createElement('div');
+    div.innerHTML=`<button class="cat-btn active" data-id="${cat.id}" onclick="toggleCat('${cat.id}',this)">
+      <span class="cat-check">✓</span>
+      <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${cat.nom}</span>
+      <span class="cat-count">${wc}</span>
+    </button>`;
+    tree.appendChild(div);
+  });
+}
+
+// ── FILTERS ───────────────────────────────────────────────
+function toggleNivel(n,el){
+  if(selectedNiveles.has(n)){if(selectedNiveles.size===1)return;selectedNiveles.delete(n);el.className='chip chip-nivel';}
+  else{selectedNiveles.add(n);el.className=`chip chip-nivel active-${n}`;}
+  refreshAll();
+}
+function toggleReg(r,el){
+  if(selectedRegistres.has(r)){if(selectedRegistres.size===1)return;selectedRegistres.delete(r);el.className='chip chip-reg';}
+  else{selectedRegistres.add(r);el.className='chip chip-reg active';}
+  refreshAll();
+}
+function toggleCat(id,btn){
+  if(selectedCats.has(id)){if(selectedCats.size===1)return;selectedCats.delete(id);btn.classList.remove('active');}
+  else{selectedCats.add(id);btn.classList.add('active');}
+  refreshAll();
+}
+let allSelected=true;
+function toggleAllCats(){
+  allSelected=!allSelected;
+  const btns=document.querySelectorAll('.cat-btn');
+  if(allSelected){DB.categories.forEach(c=>selectedCats.add(c.id));btns.forEach(b=>b.classList.add('active'));}
+  else{const f=DB.categories[0];selectedCats.clear();selectedCats.add(f.id);btns.forEach((b,i)=>i===0?b.classList.add('active'):b.classList.remove('active'));}
+  refreshAll();
+}
+
+// ── DATA ──────────────────────────────────────────────────
+function filterWord(m){return selectedNiveles.has(m.niveau)&&selectedRegistres.has(m.registre);}
+function getFilteredWords(cat){if(!selectedCats.has(cat.id))return[];return cat.subcategories.flatMap(s=>s.mots.filter(filterWord));}
+function getFilteredData(){
+  return DB.categories.filter(c=>selectedCats.has(c.id)).map(c=>({
+    ...c,subcategories:c.subcategories.map(s=>({...s,mots:s.mots.filter(filterWord)})).filter(s=>s.mots.length>0)
+  })).filter(c=>c.subcategories.length>0);
+}
+
+function refreshAll(){
+  // If editing, exit edit mode silently when filters change (avoids stale data-mot refs)
+  if(wordsEditMode) {
+    wordsEditMode = false;
+    wordsApplyEditUI();
+  }
+  DB.categories.forEach(cat=>{
+    const btn=document.querySelector(`.cat-btn[data-id="${cat.id}"]`);
+    if(btn) btn.querySelector('.cat-count').textContent=getFilteredWords(cat).length;
+  });
+  renderPreview();
+}
+
+// ── PREVIEW ───────────────────────────────────────────────
+function renderPreview(){
+  const data=getFilteredData();
+  const tw=data.reduce((a,c)=>a+c.subcategories.reduce((b,s)=>b+s.mots.length,0),0);
+  const ts=data.reduce((a,c)=>a+c.subcategories.length,0);
+  document.getElementById('stat-words').textContent=tw;
+  document.getElementById('stat-cats').textContent=data.length;
+  document.getElementById('stat-subs').textContent=ts;
+  document.getElementById('preview-meta').textContent=`${tw} palabras · ${data.length} categorías · ${ts} subcategorías`;
+  const has=tw>0;
+  document.getElementById('btn-excel').disabled=!has;
+  document.getElementById('btn-csv').disabled=!has;
+  const jsonBtn=document.getElementById('btn-json-preview');
+  if(jsonBtn) jsonBtn.disabled=!has;
+  const wrap=document.getElementById('preview-table');
+  if(!has){wrap.innerHTML=`<div class="empty-state"><div class="empty-state-icon">🔍</div><div class="empty-state-text">No hay palabras con los filtros actuales.</div></div>`;return;}
+  const COLS_VIEW=['Palabra (fr)','IPA','Género','Otro gén.','Traducción(es)','Sinónimos','Ejemplo','Niv.','Registre'];
+  const COLS_EDIT=['Palabra (fr)','IPA','Género','Otro gén.','Traducción(es)','Sinónimos','Ejemplo','Nivel','Registre'];
+  const COLS = wordsEditMode ? COLS_EDIT : COLS_VIEW;
+  let html='';
+  data.forEach(cat=>{
+    const ct=cat.subcategories.reduce((a,s)=>a+s.mots.length,0);
+    html+=`<div class="preview-cat"><div class="preview-cat-header"><span class="preview-cat-name">${cat.nom}</span><span class="preview-cat-count">${ct} palabras</span></div>`;
+    cat.subcategories.forEach(sub=>{
+      html+=`<div class="preview-sub"><div class="preview-sub-header"><span class="preview-sub-name">› ${sub.nom}</span></div>
+        <div class="col-header-row${wordsEditMode?' editing':''}">${COLS.map(l=>`<div class="col-h">${l}</div>`).join('')}</div>`;
+      sub.mots.forEach(m=>{
+        const motEsc = m.mot.replace(/"/g,'&quot;');
+        if(wordsEditMode) {
+          const genreOpts = ['m.', 'f.', 'inv.', 'm.pl.', 'f.pl.'].map(n=>`<option value="${n}"${m.genre===n?' selected':''}>${n}</option>`).join('');
+          const niveauOpts = ['A1','A2','B1','B2','C1','C2'].map(n=>`<option value="${n}"${m.niveau===n?' selected':''}>${n}</option>`).join('');
+          const regOpts = REGISTRES.map(r=>`<option value="${r}"${m.registre===r?' selected':''}>${REG_LABELS[r]}</option>`).join('');
+          html+=`<div class="preview-row editing" data-cat-id="${cat.id}" data-sub-id="${sub.id}" data-mot="${motEsc}">
+            <div class="cell"><input class="cell-input cell-mot" data-field="mot" value="${motEsc}" style="font-weight:600;color:var(--white)"></div>
+            <div class="cell"><input class="cell-input cell-ipa" data-field="ipa" value="${(m.ipa||'').replace(/"/g,'&quot;')}" style="font-family:'DM Mono',monospace;color:var(--gold)"></div>
+            <div class="cell"><select class="cell-select" data-field="genre" style="max-width:50px;color:var(--gold-light)">${genreOpts}</select></div>
+            <div class="cell"><input class="cell-input" data-field="autre_genre" value="${(m.autre_genre||'').replace(/"/g,'&quot;')}" style="max-width:60px"></div>
+            <div class="cell"><input class="cell-input" data-field="traductions" value="${(m.traductions||[]).join(', ').replace(/"/g,'&quot;')}" title="Separar con comas"></div>
+            <div class="cell"><input class="cell-input" data-field="synonymes" value="${(m.synonymes||[]).join(', ').replace(/"/g,'&quot;')}" title="Separar con comas"></div>
+            <div class="cell"><input class="cell-input" data-field="exemple" value="${(m.exemple||'').replace(/"/g,'&quot;')}" style="font-size:11px;color:var(--gray2)"></div>
+            <div class="cell"><select class="cell-select" data-field="niveau">${niveauOpts}</select></div>
+            <div class="cell"><select class="cell-select" data-field="registre">${regOpts}</select></div>
+          </div>`;
+        } else {
+          html+=`<div class="preview-row">
+            <div class="cell cell-mot">${m.mot}</div>
+            <div class="cell cell-ipa">${m.ipa||''}</div>
+            <div class="cell cell-genre">${m.genre||'—'}</div>
+            <div class="cell">${m.autre_genre||'—'}</div>
+            <div class="cell">${(m.traductions||[]).join(', ')}</div>
+            <div class="cell">${(m.synonymes||[]).slice(0,3).join(', ')||'—'}</div>
+            <div class="cell" style="white-space:normal;font-size:11px;color:var(--gray2)">${m.exemple||''}</div>
+            <div class="cell"><span class="badge-nivel badge-${m.niveau}">${m.niveau}</span></div>
+            <div class="cell"><span class="badge-reg badge-${m.registre}">${REG_LABELS[m.registre]||m.registre}</span></div>
+          </div>`;
+        }
+      });
+      html+=`</div>`;
+    });
+    html+=`</div>`;
+  });
+  wrap.innerHTML=html;
+}
+
+// ── EXCEL EXPORT ──────────────────────────────────────────
+async function exportExcel(){
+  const btn=document.getElementById('btn-excel');
+  btn.disabled=true; btn.innerHTML='<span class="btn-icon">⏳</span> Generando…';
+  showProgress(0);
+  const data=getFilteredData();
+  const wb=XLSX.utils.book_new();
+  const fill=h=>({type:'pattern',patternType:'solid',fgColor:{rgb:h}});
+  const thin={style:'thin',color:{rgb:'DDDDDD'}};
+  const bord={top:thin,bottom:thin,left:thin,right:thin};
+  const C={navy:'0E1117',navyM:'1C2333',navyL:'2A3347',gold:'C9A84C',even:'F0F4FF',odd:'FFFFFF'};
+  const NIV_C={A1:'2D7D46',A2:'3E9E5C',B1:'1A5CA8',B2:'2979D0',C1:'7B3FA0',C2:'9C52C7'};
+  const REG_C={standard:'4A5568',familier:'C05621',soutenu:'2B6CB0',technique:'702459'};
+  // Index sheet
+  const idx=[['Categoría','Subcategoría','Palabras']];
+  data.forEach(cat=>cat.subcategories.forEach((s,i)=>idx.push([i===0?cat.nom:'',s.nom,s.mots.length])));
+  const idxWs=XLSX.utils.aoa_to_sheet(idx);
+  idxWs['!cols']=[{wch:30},{wch:32},{wch:10}];
+  XLSX.utils.book_append_sheet(wb,idxWs,'Índice');
+  showProgress(8);
+  for(let ci=0;ci<data.length;ci++){
+    const cat=data[ci];
+    const sn=`${ci+1}. ${cat.nom}`.substring(0,31);
+    const rows=[['',cat.nom,'','','','','','','']];
+    rows.push(['Mot en français','IPA','Genre','Autre genre','Traduction(s)','Synonymes','Exemple','Niveau','Registre']);
+    cat.subcategories.forEach(sub=>{
+      rows.push([sub.nom,'','','','','','','','']);
+      sub.mots.forEach(m=>rows.push([m.mot,m.ipa||'',m.genre||'',m.autre_genre||'',(m.traductions||[]).join(' / '),(m.synonymes||[]).join(', '),m.exemple||'',m.niveau,m.registre]));
+      rows.push(['','','','','','','','','']);
+    });
+    const ws=XLSX.utils.aoa_to_sheet(rows);
+    ws['!cols']=[{wch:22},{wch:16},{wch:10},{wch:12},{wch:26},{wch:28},{wch:46},{wch:8},{wch:12}];
+    ws['!merges']=[{s:{r:0,c:0},e:{r:0,c:8}}];
+    let ev=0;
+    rows.forEach((row,ri)=>{
+      const isTitleRow=ri===0;
+      const isHeader=ri===1;
+      const isSub=row[1]===''&&row[2]===''&&row[6]===''&&row[0]!=='';
+      const isSpacer=row.every(v=>v==='');
+      for(let ci2=0;ci2<9;ci2++){
+        const ref=XLSX.utils.encode_cell({r:ri,c:ci2});
+        if(!ws[ref]) ws[ref]={v:'',t:'s'};
+        let s={border:bord,alignment:{horizontal:'left',vertical:'center',wrapText:ci2===6}};
+        if(isTitleRow){s={fill:fill(C.navy),font:{bold:true,color:{rgb:C.gold},sz:14,name:'Georgia'},alignment:{horizontal:'center',vertical:'center'}};}
+        else if(isHeader){s={fill:fill(C.navyM),font:{bold:true,color:{rgb:'FFFFFF'},sz:10},alignment:{horizontal:'center',vertical:'center'},border:bord};}
+        else if(isSub){s={fill:fill(C.navyL),font:{bold:true,color:{rgb:C.gold},sz:10},border:bord,alignment:{horizontal:'left',vertical:'center'}};}
+        else if(!isSpacer){
+          const bg=ev%2===0?C.even:C.odd;
+          s.fill=fill(bg);
+          if(ci2===0) s.font={sz:10,bold:true,color:{rgb:C.navy}};
+          else if(ci2===1) s.font={sz:10,color:{rgb:C.gold},name:'Courier New'};
+          else if(ci2===2) s.font={sz:10,italic:true,color:{rgb:C.navyL}};
+          else if(ci2===7&&row[7]){const nc=NIV_C[row[7]]||'4A5568';s.font={sz:10,bold:true,color:{rgb:nc}};}
+          else if(ci2===8&&row[8]){const rc=REG_C[row[8]]||'4A5568';s.font={sz:10,color:{rgb:rc}};}
+          else s.font={sz:10};
+        }
+        ws[ref].s=s;
+      }
+      if(!isTitleRow&&!isHeader&&!isSub&&!isSpacer) ev++;
+    });
+    XLSX.utils.book_append_sheet(wb,ws,sn);
+    showProgress(8+Math.round((ci+1)/data.length*87));
+    await new Promise(r=>setTimeout(r,2));
+  }
+  showProgress(100);
+  XLSX.writeFile(wb,'Dictionnaire_Francais.xlsx',{bookSST:false,cellStyles:true});
+  setTimeout(()=>{hideProgress();btn.disabled=false;btn.innerHTML='<span class="btn-icon">📊</span> Exportar Excel';showToast('📊','Excel generado correctamente');},400);
+}
+
+// ── CSV EXPORT ────────────────────────────────────────────
+function exportCSV(){
+  const data=getFilteredData();
+  const rows=[['Categoría','Subcategoría','Mot en français','IPA','Genre','Autre genre','Traduction(s)','Synonymes','Exemple','Niveau','Registre']];
+  data.forEach(cat=>cat.subcategories.forEach(sub=>sub.mots.forEach(m=>rows.push([
+    cat.nom,sub.nom,m.mot,m.ipa||'',m.genre||'',m.autre_genre||'',(m.traductions||[]).join(' / '),(m.synonymes||[]).join(', '),m.exemple||'',m.niveau,m.registre
+  ]))));
+  const csv=rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\r\n');
+  const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
+  const a=Object.assign(document.createElement('a'),{href:URL.createObjectURL(blob),download:'Dictionnaire_Francais.csv'});
+  a.click(); URL.revokeObjectURL(a.href);
+  showToast('📄',`CSV exportado: ${rows.length-1} palabras`);
+}
+
+// ── PROGRESS & TOAST ──────────────────────────────────────
+function showProgress(p){const w=document.getElementById('progress-wrap');w.classList.add('visible');document.getElementById('progress-bar').style.width=p+'%';}
+function hideProgress(){document.getElementById('progress-wrap').classList.remove('visible');document.getElementById('progress-bar').style.width='0%';}
+let toastTimer;
+function showToast(icon,text,err=false){
+  const el=document.getElementById('toast');
+  document.getElementById('toast-icon').textContent=icon;
+  document.getElementById('toast-text').textContent=text;
+  el.style.borderColor=err?'rgba(179,58,58,.5)':'var(--border)';
+  el.classList.add('show'); clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>el.classList.remove('show'),3500);
+}
+
+// ── MERGE STATUS ──────────────────────────────────────────
+function updateMergeStatus(){
+  const nm=document.getElementById('merge-db-name');
+  const st=document.getElementById('merge-db-stats');
+  ['btn-export-json','merge-btn-excel','merge-btn-csv'].forEach(id=>{const e=document.getElementById(id);if(e)e.disabled=!DB;});
+  if(!DB){nm.textContent='Sin base de datos cargada';st.innerHTML='';return;}
+  nm.textContent=DB.meta?.title||'Dictionnaire de Français';
+  const w=getTotalWords(DB),c=DB.categories.length,s=DB.categories.reduce((a,c)=>a+c.subcategories.length,0);
+  const v=DB.categories.reduce((a,cat)=>a+cat.subcategories.reduce((b,sub)=>b+sub.mots.filter(m=>m.type_mot==='verbe'&&m.conjugaisons&&Object.keys(m.conjugaisons).length>0).length,0),0);
+  st.innerHTML=`<span class="db-stat-pill"><strong>${w}</strong> palabras</span><span class="db-stat-pill"><strong>${c}</strong> categorías</span><span class="db-stat-pill"><strong>${s}</strong> subcategorías</span><span class="db-stat-pill"><strong>${v}</strong> verbos</span>`;
+}
+
+
+// ── JSON EXPORT PREVIEW ───────────────────────────────────────
+function exportJSONPreview(){
+  if(!DB) return;
+  const filtered=getFilteredData();
+  if(!filtered.length){showToast('✗','No hay datos en la vista previa',true);return;}
+  const totalWords=filtered.reduce((a,c)=>a+c.subcategories.reduce((b,s)=>b+s.mots.length,0),0);
+  const exportObj={
+    meta:{...(DB.meta||{}),exported_preview:true,export_date:new Date().toISOString()},
+    categories:filtered
+  };
+  const blob=new Blob([JSON.stringify(exportObj,null,2)],{type:'application/json;charset=utf-8'});
+  const a=Object.assign(document.createElement('a'),{href:URL.createObjectURL(blob),download:'dictionnaire_preview.json'});
+  a.click(); URL.revokeObjectURL(a.href);
+  showToast('💾',`JSON exportado: ${totalWords} palabras (vista previa)`);
+}
+
+// ── JSON EXPORT (BD completa desde Ampliar BD) ───────────────
+function exportJSON(){
+  if(!DB) return;
+  const blob=new Blob([JSON.stringify(DB,null,2)],{type:'application/json;charset=utf-8'});
+  const a=Object.assign(document.createElement('a'),{href:URL.createObjectURL(blob),download:'dictionnaire_merged.json'});
+  a.click(); URL.revokeObjectURL(a.href);
+  showToast('💾',`JSON exportado: ${getTotalWords(DB)} palabras`);
+}
+
+// ── DRAG & DROP ───────────────────────────────────────────
+function handleDrop(e){
+  e.preventDefault(); document.getElementById('drop-zone').classList.remove('drag-over');
+  const f=e.dataTransfer.files[0]; if(!f) return;
+  if(!f.name.endsWith('.json')){showMergeBadge(false,'Solo se aceptan archivos .json');return;}
+  readAndMerge(f);
+}
+function handleMergeFile(inp){const f=inp.files[0];if(!f)return;readAndMerge(f);inp.value='';}
+function readAndMerge(file){
+  const rd=new FileReader();
+  rd.onload=e=>{
+    let inc; try{inc=JSON.parse(e.target.result);}catch{showMergeBadge(false,'JSON inválido: error de sintaxis.');return;}
+    const err=validateDBFormat(inc);
+    if(err){showMergeBadge(false,err);return;}
+    showMergeBadge(true,`Formato válido · ${getTotalWords(inc)} palabras`);
+    performMerge(inc,file.name);
+  };
+  rd.readAsText(file);
+}
+
+// ── VALIDATION ────────────────────────────────────────────
+function validateDBFormat(obj){
+  if(!obj||typeof obj!=='object') return 'No es un objeto JSON válido.';
+  if(!Array.isArray(obj.categories)) return 'Falta el campo "categories" (array).';
+  if(!obj.categories.length) return '"categories" está vacío.';
+  const VN=new Set(['A1','A2','B1','B2','C1','C2']);
+  const VR=new Set(['standard','familier','soutenu','technique']);
+  const REQ=['mot','ipa','traductions','exemple','niveau','registre'];
+  const errs=[];let n=0;
+  loop: for(const cat of obj.categories){
+    if(!cat.id||!cat.nom) return `Categoría sin "id"/"nom".`;
+    if(!Array.isArray(cat.subcategories)) return `"${cat.nom}" sin array "subcategories".`;
+    for(const sub of cat.subcategories){
+      if(!sub.id||!sub.nom) return `Subcategoría sin "id"/"nom" en "${cat.nom}".`;
+      if(!Array.isArray(sub.mots)) return `"${sub.nom}" sin array "mots".`;
+      for(const m of sub.mots){
+        if(n++>40) break loop;
+        const miss=REQ.filter(f=>!(f in m));
+        if(miss.length) errs.push(`"${m.mot||'?'}" falta: ${miss.join(', ')}`);
+        if(!Array.isArray(m.traductions)) errs.push(`"${m.mot||'?'}" traductions no es array`);
+        if(m.niveau&&!VN.has(m.niveau)) errs.push(`"${m.mot||'?'}" niveau inválido: "${m.niveau}"`);
+        if(m.registre&&!VR.has(m.registre)) errs.push(`"${m.mot||'?'}" registre inválido: "${m.registre}"`);
+        if(errs.length>=5) break loop;
+      }
+    }
+  }
+  return errs.length?`Errores:\n• ${errs.slice(0,5).join('\n• ')}`:null;
+}
+
+// ── MERGE ─────────────────────────────────────────────────
+function mergeArr(ex,inc){
+  if(!Array.isArray(ex)||!ex.length) return{val:JSON.parse(JSON.stringify(inc)),changed:!!inc.length};
+  const s=new Set(ex.map(v=>String(v).toLowerCase()));
+  const nw=inc.filter(v=>!s.has(String(v).toLowerCase()));
+  return nw.length?{val:[...ex,...nw],changed:true}:{val:ex,changed:false};
+}
+
+function performMerge(inc,filename){
+  if(!DB){
+    DB=inc; initUI(); updateMergeStatus();
+    showMergeLog([{t:'section',s:`Base establecida desde "${filename}"`},{t:'added',s:`${getTotalWords(DB)} palabras cargadas.`}]);
+    showToast('✓',`BD cargada: ${getTotalWords(DB)} palabras`); return;
+  }
+  const log=[];let nA=0,nU=0,nS=0,nC=0,nB=0;
+  log.push({t:'section',s:`Fusionando "${filename}"...`});
+  const catMap=new Map(DB.categories.map(c=>[c.id,c]));
+  for(const iCat of inc.categories){
+    let cat=catMap.get(iCat.id);
+    if(!cat){cat=JSON.parse(JSON.stringify(iCat));DB.categories.push(cat);catMap.set(iCat.id,cat);nC++;const wc=cat.subcategories.reduce((a,s)=>a+s.mots.length,0);nA+=wc;log.push({t:'added',s:`Nueva cat: "${iCat.nom}" (+${wc})`});continue;}
+    const subMap=new Map(cat.subcategories.map(s=>[s.id,s]));
+    for(const iSub of iCat.subcategories){
+      let sub=subMap.get(iSub.id);
+      if(!sub){sub=JSON.parse(JSON.stringify(iSub));cat.subcategories.push(sub);subMap.set(iSub.id,sub);nB++;nA+=sub.mots.length;log.push({t:'added',s:`Nueva sub: "${iSub.nom}" en "${iCat.nom}" (+${sub.mots.length})`});continue;}
+      const motMap=new Map(sub.mots.map(m=>[m.mot.toLowerCase().trim(),m]));
+      for(const iM of iSub.mots){
+        const key=iM.mot.toLowerCase().trim();
+        const ex=motMap.get(key);
+        if(!ex){const nm=JSON.parse(JSON.stringify(iM));sub.mots.push(nm);motMap.set(key,nm);nA++;log.push({t:'added',s:`+ "${iM.mot}" → ${(iM.traductions||[]).join(', ')}`});continue;}
+        const ch=[];
+        for(const f of ENRICHABLE){
+          const iv=iM[f];if(iv==null)continue;
+          if(Array.isArray(iv)){const r=mergeArr(ex[f]||[],iv);if(r.changed){ex[f]=r.val;ch.push(f);}}
+          else if(ex[f]==null||ex[f]===''){ex[f]=iv;ch.push(f);}
+        }
+        const r=mergeArr(ex.traductions||[],iM.traductions||[]);
+        if(r.changed){ex.traductions=r.val;if(!ch.includes('traductions'))ch.push('traductions');}
+        if(ch.length){nU++;log.push({t:'updated',s:`↑ "${iM.mot}": ${[...new Set(ch)].join(', ')}`});}
+        else nS++;
+      }
+    }
+  }
+  log.push({t:'summary',s:`✓ +${nA} añadidas · ↑${nU} actualizadas · ${nS} sin cambios`+(nC?` · ${nC} cat.`:'')+( nB?` · ${nB} sub.`:'')});
+  showMergeLog(log); updateMergeStatus(); initUI();
+  showToast('🔀',`+${nA} añadidas, ${nU} actualizadas`);
+}
+
+function showMergeBadge(ok,msg){
+  document.getElementById('merge-valid-badge').innerHTML=
+    `<span class="valid-badge ${ok?'valid-ok':'valid-err'}">${ok?'✓':'✗'} ${msg.replace(/\n/g,'<br>')}</span>`;
+}
+function showMergeLog(entries) {
+  const el=document.getElementById('merge-log');
+  el.classList.add('show');
+  const CLS={section:'log-section',added:'log-added',updated:'log-updated',summary:'log-summary',error:'log-error'};
+  el.innerHTML=entries.map(e=>`<div class="${CLS[e.t]||'log-ignored'}">${e.s}</div>`).join('');
+  el.scrollTop=el.scrollHeight;
+}
+
+// ════════════════════════════════════════════════════════════════
+// MANAGE BD
+// ════════════════════════════════════════════════════════════════
+
+// Selection state: {type:'cat'|'sub', catId, subId?}
+let mgSel = null;
+
+function switchTab(tab) {
+  ['gen','merge','manage','verbs'].forEach(t => {
+    const panel = document.getElementById(t+'-panel');
+    if(panel) panel.style.display = t===tab ? (t==='gen'?'':'block') : 'none';
+    const btn = document.getElementById('tab-'+t);
+    if(btn) btn.classList.toggle('active', t===tab);
+  });
+  if(tab==='gen') document.getElementById('gen-panel').style.display='';
+  if(tab==='merge') updateMergeStatus();
+  if(tab==='manage') mgRefresh();
+  if(tab==='verbs') verbsRender();
+}
+
+function mgRefresh() {
+  if(!DB) { document.getElementById('mg-tree').innerHTML='<div style="padding:20px;font-size:12px;color:var(--gray)">Sin BD cargada</div>'; return; }
+  mgBuildTree();
+  mgUpdateTreeCount();
+  if(mgSel) mgSelect(mgSel.type, mgSel.catId, mgSel.subId);
+  else mgClearSelection();
+}
+
+function mgUpdateTreeCount() {
+  if(!DB) return;
+  const cats=DB.categories.length;
+  const subs=DB.categories.reduce((a,c)=>a+c.subcategories.length,0);
+  const words=getTotalWords(DB);
+  document.getElementById('mg-tree-count').textContent=`${cats} cat · ${subs} sub · ${words} pal`;
+}
+
+function mgBuildTree() {
+  const tree=document.getElementById('mg-tree');
+  tree.innerHTML='';
+  (DB.categories||[]).forEach((cat,catIdx)=>{
+    const wc=cat.subcategories.reduce((a,s)=>a+s.mots.length,0);
+    const isSelCat = mgSel && mgSel.type==='cat' && mgSel.catId===cat.id;
+    const hasSelSub = mgSel && mgSel.type==='sub' && mgSel.catId===cat.id;
+    const isOpen = isSelCat || hasSelSub;
+    const totalCats = DB.categories.length;
+
+    const catDiv=document.createElement('div');
+    catDiv.className='mt-cat'+(isSelCat?' selected':'');
+    catDiv.id='mg-cat-'+cat.id;
+
+    const subItems=cat.subcategories.map((sub,subIdx)=>{
+      const isSelSub=mgSel&&mgSel.type==='sub'&&mgSel.catId===cat.id&&mgSel.subId===sub.id;
+      const totalSubs=cat.subcategories.length;
+      return `<div class="mt-sub${isSelSub?' selected':''}" id="mg-sub-${cat.id}-${sub.id}"
+          onclick="mgClickSub('${cat.id}','${sub.id}')">
+          <div class="sort-btns" onclick="event.stopPropagation()">
+            <button class="sort-btn" title="Subir subcategoría" ${subIdx===0?'disabled style="opacity:.3"':''} onclick="mgMoveSortSub('${cat.id}','${sub.id}',-1)">▲</button>
+            <button class="sort-btn" title="Bajar subcategoría" ${subIdx===totalSubs-1?'disabled style="opacity:.3"':''} onclick="mgMoveSortSub('${cat.id}','${sub.id}',1)">▼</button>
+          </div>
+          <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${sub.nom}</span>
+          <span class="mt-sub-count">${sub.mots.length}</span>
+        </div>`;
+    }).join('');
+
+    catDiv.innerHTML=`
+      <div class="mt-cat-hd${isOpen?' open':''}" onclick="mgClickCat('${cat.id}',this)">
+        <div class="sort-btns" onclick="event.stopPropagation()">
+          <button class="sort-btn" title="Subir categoría" ${catIdx===0?'disabled style="opacity:.3"':''} onclick="mgMoveSortCat('${cat.id}',-1)">▲</button>
+          <button class="sort-btn" title="Bajar categoría" ${catIdx===totalCats-1?'disabled style="opacity:.3"':''} onclick="mgMoveSortCat('${cat.id}',1)">▼</button>
+        </div>
+        <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${cat.nom}</span>
+        <span class="mt-cat-count">${wc}</span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="mt-subs${isOpen?' open':''}" id="mg-subs-${cat.id}">
+        ${subItems}
+      </div>`;
+    tree.appendChild(catDiv);
+  });
+}
+
+// Mover categoría arriba/abajo
+function mgMoveSortCat(catId, dir) {
+  if(!DB) return;
+  const idx = DB.categories.findIndex(c=>c.id===catId);
+  if(idx<0) return;
+  const newIdx = idx+dir;
+  if(newIdx<0||newIdx>=DB.categories.length) return;
+  const tmp = DB.categories[idx];
+  DB.categories[idx] = DB.categories[newIdx];
+  DB.categories[newIdx] = tmp;
+  mgRefresh(); initUI();
+  showToast('↕️', `Categoría "${tmp.nom}" movida ${dir<0?'arriba':'abajo'}`);
+}
+
+// Mover subcategoría arriba/abajo dentro de su categoría
+function mgMoveSortSub(catId, subId, dir) {
+  if(!DB) return;
+  const cat = DB.categories.find(c=>c.id===catId);
+  if(!cat) return;
+  const idx = cat.subcategories.findIndex(s=>s.id===subId);
+  if(idx<0) return;
+  const newIdx = idx+dir;
+  if(newIdx<0||newIdx>=cat.subcategories.length) return;
+  const tmp = cat.subcategories[idx];
+  cat.subcategories[idx] = cat.subcategories[newIdx];
+  cat.subcategories[newIdx] = tmp;
+  mgRefresh(); initUI();
+  showToast('↕️', `Subcategoría "${tmp.nom}" movida ${dir<0?'arriba':'abajo'}`);
+}
+
+function mgClickCat(catId, hd) {
+  const sub=document.getElementById('mg-subs-'+catId);
+  const open=sub.classList.toggle('open');
+  hd.classList.toggle('open',open);
+  mgSelect('cat',catId,null);
+}
+
+function mgClickSub(catId,subId) {
+  mgSelect('sub',catId,subId);
+}
+
+function mgSelect(type,catId,subId) {
+  mgSel={type,catId,subId};
+  // Highlight tree
+  document.querySelectorAll('.mt-cat').forEach(el=>el.classList.remove('selected'));
+  document.querySelectorAll('.mt-sub').forEach(el=>el.classList.remove('selected'));
+  if(type==='cat') { const el=document.getElementById('mg-cat-'+catId); if(el) el.classList.add('selected'); }
+  else { const el=document.getElementById(`mg-sub-${catId}-${subId}`); if(el) el.classList.add('selected'); }
+
+  const cat=DB.categories.find(c=>c.id===catId);
+  if(!cat) return;
+
+  document.getElementById('mg-sel-info').style.display='';
+  document.getElementById('mg-actions').style.display='';
+
+  if(type==='cat') {
+    const wc=cat.subcategories.reduce((a,s)=>a+s.mots.length,0);
+    document.getElementById('mg-sel-label') && (document.getElementById('mg-sel-label').textContent='Categoría');
+    document.getElementById('mg-sel-name').textContent=cat.nom;
+    document.getElementById('mg-sel-meta').textContent=`ID: ${cat.id} · ${cat.subcategories.length} subcategorías · ${wc} palabras`;
+    document.getElementById('mg-rename-input').value=cat.nom;
+    document.getElementById('mg-rename-id').value=cat.id;
+    // Move group: merge with another category
+    mgBuildMoveCat(cat);
+    // Create group
+    mgBuildCreateSub(cat);
+    // Delete
+    document.getElementById('mg-delete-desc').textContent=`Categoría: "${cat.nom}"`;
+    document.getElementById('mg-delete-btn').textContent=wc>0?`Eliminar (${wc} pal.)`:'Eliminar';
+    // Hide word list
+    document.getElementById('mg-word-list').style.display='none';
+  } else {
+    const sub=cat.subcategories.find(s=>s.id===subId);
+    if(!sub) return;
+    document.getElementById('mg-sel-name').textContent=sub.nom;
+    document.getElementById('mg-sel-meta').textContent=`ID: ${sub.id} · Categoría: "${cat.nom}" · ${sub.mots.length} palabras`;
+    document.getElementById('mg-rename-input').value=sub.nom;
+    document.getElementById('mg-rename-id').value=sub.id;
+    // Move group: move/merge sub
+    mgBuildMoveSub(cat,sub);
+    // Create group: add new sub in same cat
+    mgBuildCreateSub(cat);
+    // Delete
+    document.getElementById('mg-delete-desc').textContent=`Subcategoría: "${sub.nom}" (${sub.mots.length} palabras)`;
+    document.getElementById('mg-delete-btn').textContent=`Eliminar (${sub.mots.length} pal.)`;
+    // Word list
+    mgShowWordList(sub);
+  }
+}
+
+function mgBuildMoveCat(cat) {
+  const g=document.getElementById('mg-move-group');
+  const otherCats=DB.categories.filter(c=>c.id!==cat.id);
+  g.innerHTML=`
+    <div class="action-row">
+      <span class="action-label">Fusionar con</span>
+      <select class="mg-select" id="mg-merge-cat-target">
+        <option value="">-- Elegir categoría --</option>
+        ${otherCats.map(c=>`<option value="${c.id}">${c.nom}</option>`).join('')}
+      </select>
+      <button class="mg-btn mg-btn-blue" onclick="mgMergeCat()">Fusionar</button>
+    </div>
+    <div style="font-size:10px;color:var(--gray);margin-top:2px">Mueve todas las subcategorías a la categoría destino y elimina esta.</div>`;
+}
+
+function mgBuildMoveSub(cat,sub) {
+  const g=document.getElementById('mg-move-group');
+  const catOpts=DB.categories.map(c=>`<optgroup label="${c.nom}">${c.subcategories.filter(s=>!(s.id===sub.id&&c.id===cat.id)).map(s=>`<option value="${c.id}|||${s.id}">${s.nom}</option>`).join('')}</optgroup>`).join('');
+  const catTargets=DB.categories.filter(c=>c.id!==cat.id).map(c=>`<option value="${c.id}">${c.nom}</option>`).join('');
+  g.innerHTML=`
+    <div class="action-row">
+      <span class="action-label">Mover a cat.</span>
+      <select class="mg-select" id="mg-move-sub-cat">
+        <option value="">-- Categoría destino --</option>
+        ${catTargets}
+      </select>
+      <button class="mg-btn mg-btn-blue" onclick="mgMoveSub()">Mover</button>
+    </div>
+    <div class="action-row">
+      <span class="action-label">Fusionar con</span>
+      <select class="mg-select" id="mg-merge-sub-target">
+        <option value="">-- Subcategoría destino --</option>
+        ${catOpts}
+      </select>
+      <button class="mg-btn mg-btn-blue" onclick="mgMergeSub()">Fusionar</button>
+    </div>
+    <div style="font-size:10px;color:var(--gray);margin-top:2px">Fusionar mueve las palabras a la subcategoría destino y elimina esta.</div>`;
+}
+
+function mgBuildCreateSub(cat) {
+  const g=document.getElementById('mg-create-group');
+  g.innerHTML=`
+    <div class="action-row">
+      <span class="action-label">Nueva subcategoría</span>
+      <input class="mg-input" id="mg-new-sub-nom" placeholder="Nombre…" style="min-width:100px">
+      <input class="mg-input" id="mg-new-sub-id"  placeholder="id_slug" style="min-width:80px">
+      <button class="mg-btn mg-btn-gold" onclick="mgCreateSub('${cat.id}')">Crear</button>
+    </div>
+    <div class="action-row">
+      <span class="action-label">Nueva categoría</span>
+      <input class="mg-input" id="mg-new-cat-nom" placeholder="Nombre…" style="min-width:100px">
+      <input class="mg-input" id="mg-new-cat-id"  placeholder="id_slug" style="min-width:80px">
+      <button class="mg-btn mg-btn-gold" onclick="mgCreateCat()">Crear</button>
+    </div>`;
+}
+
+function mgShowWordList(sub) {
+  const wl=document.getElementById('mg-word-list');
+  wl.style.display='';
+  document.getElementById('mg-wl-title').textContent=`${sub.nom}`;
+  document.getElementById('mg-wl-count').textContent=`${sub.mots.length}`;
+  const rows=document.getElementById('mg-wl-rows');
+  if(!sub.mots.length){rows.innerHTML='<div style="padding:16px;font-size:12px;color:var(--gray);text-align:center">Sin palabras</div>';return;}
+  const COLS=['Palabra (fr)','IPA','Género','Otro gén.','Traducción(es)','Sinónimos','Ejemplo','Niv.','Registre'];
+  let html='';
+  html=`<div class="preview-sub">
+        <div class="col-header-row">${COLS.map(l=>`<div class="col-h">${l}</div>`).join('')}</div>`
+  html+=sub.mots.map(m=>`
+    <div class="preview-row">
+      <div class="cell cell-mot">${m.mot}</div>
+      <div class="cell cell-ipa">${m.ipa||''}</div>
+      <div class="cell cell-genre">${m.genre||'—'}</div>
+      <div class="cell">${m.autre_genre||'—'}</div>
+      <div class="cell">${(m.traductions||[]).join(', ')}</div>
+      <div class="cell">${(m.synonymes||[]).slice(0,3).join(', ')||'—'}</div>
+      <div class="cell" style="white-space:normal;font-size:11px;color:var(--gray2)">${m.exemple||''}</div>
+      <div class="cell"><span class="badge-nivel badge-${m.niveau}">${m.niveau}</span></div>
+      <div class="cell"><span class="badge-reg badge-${m.registre}">${REG_LABELS[m.registre]||m.registre}</span></div>
+    </div>`).join('');
+    html+=`</div>`;
+    rows.innerHTML=html;
+}
+
+function mgClearSelection() {
+  mgSel=null;
+  document.getElementById('mg-sel-name').textContent='Ninguna selección';
+  document.getElementById('mg-sel-meta').textContent='Haz clic en una categoría o subcategoría del árbol';
+  document.getElementById('mg-actions').style.display='none';
+  document.getElementById('mg-word-list').style.display='none';
+}
+
+// ── ACTIONS ──────────────────────────────────────────────────
+
+function mgRename() {
+  if(!mgSel||!DB) return;
+  const newNom=document.getElementById('mg-rename-input').value.trim();
+  if(!newNom){showToast('✗','Escribe un nombre',true);return;}
+  if(mgSel.type==='cat'){
+    const cat=DB.categories.find(c=>c.id===mgSel.catId);
+    if(!cat) return;
+    const old=cat.nom; cat.nom=newNom;
+    showToast('✏️',`Categoría renombrada: "${old}" → "${newNom}"`);
+  } else {
+    const cat=DB.categories.find(c=>c.id===mgSel.catId);
+    const sub=cat&&cat.subcategories.find(s=>s.id===mgSel.subId);
+    if(!sub) return;
+    const old=sub.nom; sub.nom=newNom;
+    showToast('✏️',`Subcategoría renombrada: "${old}" → "${newNom}"`);
+  }
+  mgRefresh(); initUI();
+}
+
+function mgRenameId() {
+  if(!mgSel||!DB) return;
+  const newId=document.getElementById('mg-rename-id').value.trim().replace(/\s+/g,'_');
+  if(!newId){showToast('✗','Escribe un ID',true);return;}
+  if(mgSel.type==='cat'){
+    // Check not duplicate
+    if(DB.categories.some(c=>c.id===newId&&c.id!==mgSel.catId)){showToast('✗','ID ya existe',true);return;}
+    const cat=DB.categories.find(c=>c.id===mgSel.catId);
+    if(!cat) return;
+    cat.id=newId; mgSel.catId=newId;
+    showToast('✏️',`ID cambiado a "${newId}"`);
+  } else {
+    const cat=DB.categories.find(c=>c.id===mgSel.catId);
+    if(!cat) return;
+    if(cat.subcategories.some(s=>s.id===newId&&s.id!==mgSel.subId)){showToast('✗','ID ya existe en esta categoría',true);return;}
+    const sub=cat.subcategories.find(s=>s.id===mgSel.subId);
+    if(!sub) return;
+    sub.id=newId; mgSel.subId=newId;
+    showToast('✏️',`ID cambiado a "${newId}"`);
+  }
+  mgRefresh(); initUI();
+}
+
+function mgMergeCat() {
+  if(!mgSel||mgSel.type!=='cat'||!DB) return;
+  const targetId=document.getElementById('mg-merge-cat-target').value;
+  if(!targetId){showToast('✗','Elige una categoría destino',true);return;}
+  const srcCat=DB.categories.find(c=>c.id===mgSel.catId);
+  const dstCat=DB.categories.find(c=>c.id===targetId);
+  if(!srcCat||!dstCat) return;
+  mgShowModal(
+    `Fusionar categoría`,
+    `¿Mover todas las subcategorías de <strong>"${srcCat.nom}"</strong> a <strong>"${dstCat.nom}"</strong> y eliminar la categoría origen?<br><br>
+     Subcategorías afectadas: <strong>${srcCat.subcategories.length}</strong> · Palabras: <strong>${srcCat.subcategories.reduce((a,s)=>a+s.mots.length,0)}</strong>`,
+    ()=>{
+      srcCat.subcategories.forEach(sub=>dstCat.subcategories.push(sub));
+      DB.categories=DB.categories.filter(c=>c.id!==mgSel.catId);
+      mgSel=null;
+      mgRefresh(); initUI();
+      showToast('🔀',`Categorías fusionadas en "${dstCat.nom}"`);
+    }
+  );
+}
+
+function mgMoveSub() {
+  if(!mgSel||mgSel.type!=='sub'||!DB) return;
+  const targetCatId=document.getElementById('mg-move-sub-cat').value;
+  if(!targetCatId){showToast('✗','Elige una categoría destino',true);return;}
+  const srcCat=DB.categories.find(c=>c.id===mgSel.catId);
+  const dstCat=DB.categories.find(c=>c.id===targetCatId);
+  if(!srcCat||!dstCat) return;
+  const sub=srcCat.subcategories.find(s=>s.id===mgSel.subId);
+  if(!sub) return;
+  mgShowModal(
+    `Mover subcategoría`,
+    `¿Mover <strong>"${sub.nom}"</strong> (${sub.mots.length} palabras) de <strong>"${srcCat.nom}"</strong> a <strong>"${dstCat.nom}"</strong>?`,
+    ()=>{
+      srcCat.subcategories=srcCat.subcategories.filter(s=>s.id!==sub.id);
+      dstCat.subcategories.push(sub);
+      mgSel={type:'sub',catId:targetCatId,subId:sub.id};
+      mgRefresh(); initUI();
+      showToast('📦',`"${sub.nom}" movida a "${dstCat.nom}"`);
+    }
+  );
+}
+
+function mgMergeSub() {
+  if(!mgSel||mgSel.type!=='sub'||!DB) return;
+  const val=document.getElementById('mg-merge-sub-target').value;
+  if(!val){showToast('✗','Elige una subcategoría destino',true);return;}
+  const [dstCatId,dstSubId]=val.split('|||');
+  const srcCat=DB.categories.find(c=>c.id===mgSel.catId);
+  const dstCat=DB.categories.find(c=>c.id===dstCatId);
+  if(!srcCat||!dstCat) return;
+  const srcSub=srcCat.subcategories.find(s=>s.id===mgSel.subId);
+  const dstSub=dstCat.subcategories.find(s=>s.id===dstSubId);
+  if(!srcSub||!dstSub) return;
+
+  mgShowModal(
+    `Fusionar subcategorías`,
+    `¿Mover las <strong>${srcSub.mots.length}</strong> palabras de <strong>"${srcSub.nom}"</strong> a <strong>"${dstSub.nom}"</strong> y eliminar la subcategoría origen?<br><br>
+     Palabras con el mismo <em>mot</em> no se duplicarán.`,
+    ()=>{
+      // Merge words (no duplicates by mot)
+      const existing=new Set(dstSub.mots.map(m=>m.mot.toLowerCase().trim()));
+      srcSub.mots.forEach(m=>{ if(!existing.has(m.mot.toLowerCase().trim())) dstSub.mots.push(m); });
+      srcCat.subcategories=srcCat.subcategories.filter(s=>s.id!==srcSub.id);
+      mgSel={type:'sub',catId:dstCatId,subId:dstSubId};
+      mgRefresh(); initUI();
+      showToast('🔀',`Fusionadas en "${dstSub.nom}" (${dstSub.mots.length} palabras)`);
+    }
+  );
+}
+
+function mgCreateSub(catId) {
+  if(!DB) return;
+  const nom=document.getElementById('mg-new-sub-nom').value.trim();
+  let id=document.getElementById('mg-new-sub-id').value.trim().replace(/\s+/g,'_');
+  if(!nom){showToast('✗','Escribe un nombre para la subcategoría',true);return;}
+  if(!id) id=nom.toLowerCase().replace(/[^a-z0-9]/g,'_').replace(/_+/g,'_');
+  const cat=DB.categories.find(c=>c.id===catId);
+  if(!cat) return;
+  if(cat.subcategories.some(s=>s.id===id)){showToast('✗','Ya existe una subcategoría con ese ID',true);return;}
+  cat.subcategories.push({id,nom,mots:[]});
+  document.getElementById('mg-new-sub-nom').value='';
+  document.getElementById('mg-new-sub-id').value='';
+  mgSel={type:'sub',catId,subId:id};
+  mgRefresh(); initUI();
+  showToast('➕',`Subcategoría "${nom}" creada en "${cat.nom}"`);
+}
+
+function mgCreateCat() {
+  if(!DB) return;
+  const nom=document.getElementById('mg-new-cat-nom').value.trim();
+  let id=document.getElementById('mg-new-cat-id').value.trim().replace(/\s+/g,'_');
+  if(!nom){showToast('✗','Escribe un nombre para la categoría',true);return;}
+  if(!id) id=nom.toLowerCase().replace(/[^a-z0-9]/g,'_').replace(/_+/g,'_');
+  if(DB.categories.some(c=>c.id===id)){showToast('✗','Ya existe una categoría con ese ID',true);return;}
+  DB.categories.push({id,nom,subcategories:[]});
+  document.getElementById('mg-new-cat-nom').value='';
+  document.getElementById('mg-new-cat-id').value='';
+  mgSel={type:'cat',catId:id};
+  mgRefresh(); initUI();
+  showToast('➕',`Categoría "${nom}" creada`);
+}
+
+function mgConfirmDelete() {
+  if(!mgSel||!DB) return;
+  if(mgSel.type==='cat') {
+    const cat=DB.categories.find(c=>c.id===mgSel.catId);
+    if(!cat) return;
+    const wc=cat.subcategories.reduce((a,s)=>a+s.mots.length,0);
+    mgShowModal(
+      `Eliminar categoría`,
+      `¿Eliminar la categoría <strong>"${cat.nom}"</strong>?<br><br>
+       Contiene <strong>${cat.subcategories.length}</strong> subcategorías y <strong>${wc}</strong> palabras.<br>
+       <span style="color:#E07070">Esta acción no se puede deshacer.</span>`,
+      ()=>{
+        DB.categories=DB.categories.filter(c=>c.id!==mgSel.catId);
+        mgSel=null; mgRefresh(); initUI();
+        showToast('🗑️',`Categoría "${cat.nom}" eliminada`);
+      }
+    );
+  } else {
+    const cat=DB.categories.find(c=>c.id===mgSel.catId);
+    const sub=cat&&cat.subcategories.find(s=>s.id===mgSel.subId);
+    if(!sub) return;
+    mgShowModal(
+      `Eliminar subcategoría`,
+      `¿Eliminar la subcategoría <strong>"${sub.nom}"</strong> y sus <strong>${sub.mots.length}</strong> palabras?<br>
+       <span style="color:#E07070">Esta acción no se puede deshacer.</span>`,
+      ()=>{
+        cat.subcategories=cat.subcategories.filter(s=>s.id!==sub.id);
+        mgSel={type:'cat',catId:cat.id}; mgRefresh(); initUI();
+        showToast('🗑️',`Subcategoría "${sub.nom}" eliminada`);
+      }
+    );
+  }
+}
+
+// ── MODAL ─────────────────────────────────────────────────────
+let mgModalCb=null;
+function mgShowModal(title,body,cb){
+  const modal=document.getElementById('mg-modal');
+  document.getElementById('mg-modal-title').textContent=title;
+  document.getElementById('mg-modal-body').innerHTML=body;
+  modal.classList.add('show');
+  modal.setAttribute('aria-hidden','false');
+  window.mgModalCb=cb||null;
+  document.getElementById('mg-modal-confirm').onclick=function(){
+    if(window.mgModalCb) window.mgModalCb();
+    mgModalClose();
+  };
+}
+function mgModalClose(){
+  const modal=document.getElementById('mg-modal');
+  modal.classList.remove('show');
+  modal.setAttribute('aria-hidden','true');
+  window.mgModalCb=null;
+}
+document.addEventListener('click',function(e){
+  if(e.target && e.target.id==='mg-modal') mgModalClose();
+});
+
+
+// ════════════════════════════════════════════════════════════════
+// VERBOS
+// ════════════════════════════════════════════════════════════════
+const PRONOUNS     = ['je','tu','il/elle/on','nous','vous','ils/elles'];
+const PRONOUNS_IMP = ['tu','nous','vous'];
+const PRONOUNS_PAR = ['ms','fs','mp','fp'];
+const PRONOUNS_PAR_LABELS = {
+  'ms':'masc. sin.','fs':'fém. sin.',
+  'mp':'masc. plu.','fp':'fém. plu.'
+};
+const PRONOUNS_SIN = ['unique'];   // participe présent, gérondif → una sola forma
+const PRONOUNS_GEP = ['base'];
+
+const TENSE_PRONOUNS = {
+  "indicatif_présent"           : PRONOUNS,
+  "indicatif_imparfait"         : PRONOUNS,
+  "indicatif_futur_simple"      : PRONOUNS,
+  "indicatif_passé_composé"     : PRONOUNS,
+  "subjonctif_présent"          : PRONOUNS,
+  "conditionnel_présent"        : PRONOUNS,
+  "indicatif_passé_simple"      : PRONOUNS,
+  "indicatif_plus_que_parfait"  : PRONOUNS,
+  "indicatif_futur_antérieur"   : PRONOUNS,
+  "conditionnel_passé"          : PRONOUNS,
+  "subjonctif_imparfait"        : PRONOUNS,
+  "indicatif_passé_antérieur"   : PRONOUNS,
+  "subjonctif_passé"            : PRONOUNS,
+  "subjonctif_plus_que_parfait" : PRONOUNS,
+  "impératif_présent"           : PRONOUNS_IMP,
+  "participe_présent"           : PRONOUNS_SIN,
+  "participe_passé"             : PRONOUNS_PAR,
+  "gérondif_passé"              : PRONOUNS_GEP,
+  "gérondif_présent"            : PRONOUNS_SIN
+};
+
+const TENSE_LABELS = {
+  "indicatif_présent"           : 'Présent',
+  "indicatif_imparfait"         : 'Imparfait',
+  "indicatif_futur_simple"      : 'Futur simple',
+  "indicatif_passé_composé"     : 'Passé composé',
+  "subjonctif_présent"          : 'Subj. présent',
+  "conditionnel_présent"        : 'Cond. présent',
+  "indicatif_passé_simple"      : 'Passé simple',
+  "indicatif_plus_que_parfait"  : 'Plus-que-parfait',
+  "indicatif_futur_antérieur"   : 'Futur antérieur',
+  "impératif_présent"           : 'Impératif',
+  "participe_présent"           : 'Part. présent',
+  "participe_passé"             : 'Part. passé',
+  "gérondif_passé"              : 'Gér. passé',
+  "gérondif_présent"            : 'Gér. présent',
+  "conditionnel_passé"          : 'Cond. passé',
+  "subjonctif_imparfait"        : 'Subj. imparfait',
+  "indicatif_passé_antérieur"   : 'Passé antérieur',
+  "subjonctif_passé"            : 'Subj. passé',
+  "subjonctif_plus_que_parfait" : 'Subj. plus-que-parfait'
+};
+
+const TENSE_ORDER = [
+  "indicatif_présent","indicatif_passé_composé",
+  "indicatif_imparfait","indicatif_plus_que_parfait",
+  "indicatif_passé_simple","indicatif_passé_antérieur",
+  "indicatif_futur_simple","indicatif_futur_antérieur",
+  "conditionnel_présent","conditionnel_passé",
+  "subjonctif_présent","subjonctif_passé",
+  "subjonctif_imparfait","subjonctif_plus_que_parfait",
+  "participe_présent","participe_passé",
+  "gérondif_présent","gérondif_passé",
+  "impératif_présent"
+];
+
+let verbsEditMode   = false;
+let verbsCurrentIdx = -1;   // índice en verbsFiltered
+let verbsFiltered   = [];   // lista actual (filtrada + ordenada)
+let verbsHideConj = false;
+
+// ── Clave de ordenación: sin tildes, sin "se " inicial ──────────
+function verbSortKey(infinitif) {
+  let s = (infinitif || '').toLowerCase();
+  // Quitar pronombre reflexivo inicial: "se ", "s'" → base
+  s = s.replace(/^s[e']\s*/,'');
+  // Eliminar diacríticos: é→e, à→a, ç→c, etc.
+  s = s.normalize('NFD').replace(/\p{Mn}/gu, '');
+  return s;
+}
+
+// ── Letra de agrupación (sin tilde, sin "se") ───────────────────
+function verbGroupLetter(infinitif) {
+  const key = verbSortKey(infinitif);
+  return key[0] ? key[0].toUpperCase() : '?';
+}
+
+// ── LISTA ────────────────────────────────────────────────────────
+function verbsRender() {
+  const listView   = document.getElementById('verbs-list-view');
+  const detailView = document.getElementById('verbs-detail-view');
+  listView.style.display   = 'flex';
+  detailView.style.display = 'none';
+
+  if(!DB) {
+    document.getElementById('verbs-alpha-list').innerHTML =
+      '<div class="verbs-empty"><div class="verbs-empty-icon">📂</div><div>Sin base de datos cargada</div></div>';
+    document.getElementById('verbs-count').textContent = '';
+    return;
+  }
+
+  // Collect all verbs from mots across all categories/subcategories
+  const allVerbs = [];
+  (DB.categories||[]).forEach(cat => {
+    cat.subcategories.forEach(sub => {
+      sub.mots.forEach(m => {
+        if(m.type_mot === 'verbe') {
+          if(!verbsHideConj || m.conjugaisons!=null){
+            // Build a verb object compatible with the display code
+            allVerbs.push({
+              infinitif: m.mot,
+              ipa_infinitif: m.ipa || '',
+              groupe: m.groupe,
+              auxiliaire: m.auxiliaire,
+              traductions: Array.isArray(m.traductions) ? m.traductions : [m.traductions||''],
+              niveau: m.niveau,
+              registre: m.registre,
+              conjugaisons: m.conjugaisons || {},
+              _catId: cat.id, _subId: sub.id
+            });
+          }
+        }
+      });
+    });
+  });
+
+  // Ordenar ignorando tildes y "se "
+  const all = allVerbs.slice().sort((a,b)=>
+    verbSortKey(a.infinitif).localeCompare(verbSortKey(b.infinitif), 'fr')
+  );
+
+  const q = (document.getElementById('verbs-search').value||'').toLowerCase().trim();
+  verbsFiltered = q
+    ? all.filter(v =>
+        verbSortKey(v.infinitif).includes(q) ||
+        (v.infinitif||'').toLowerCase().includes(q) ||
+        (v.traductions||[]).join(' ').toLowerCase().includes(q))
+    : all;
+
+  document.getElementById('verbs-count').textContent =
+    `${verbsFiltered.length} verbo${verbsFiltered.length!==1?'s':''} de ${all.length}`;
+
+  if(!verbsFiltered.length) {
+    document.getElementById('verbs-alpha-list').innerHTML =
+      '<div class="verbs-empty"><div class="verbs-empty-icon">🔍</div><div>Sin resultados</div></div>';
+    return;
+  }
+
+  // Agrupar por letra de ordenación (sin tilde, sin "se")
+  const groups = {};
+  verbsFiltered.forEach((v,i) => {
+    const l = verbGroupLetter(v.infinitif);
+    if(!groups[l]) groups[l] = [];
+    groups[l].push({v, i});
+  });
+
+  let html = '';
+  Object.keys(groups).sort((a,b)=>a.localeCompare(b,'fr')).forEach(letter => {
+    html += `<div class="verb-alpha-group"><span class="verb-alpha-letter">${letter}</span><div class="verb-list-group">`;
+    groups[letter].forEach(({v, i}) => {
+      html += `<div class="verb-list-item" onclick="verbsOpenDetail(${i})">
+        <span class="vli-inf">${v.infinitif}</span>
+        <span class="vli-trad">${(v.traductions||[]).join(', ')}</span>
+        <div class="vli-tags">
+          <span class="badge-nivel badge-${v.niveau}">${v.niveau||''}</span>
+          ${v.groupe?`<span class="vli-tag">Groupe ${v.groupe}</span>`:''}
+          <span class="badge-reg badge-${v.registre}">${REG_LABELS[v.registre]||''}</span>
+        </div>
+        <span class="vli-arrow">›</span>
+      </div>`;
+    });
+    html += '</div></div>';
+  });
+  document.getElementById('verbs-alpha-list').innerHTML = html;
+}
+
+function verbsFilter() { verbsRender(); }
+
+// ── DETALLE ──────────────────────────────────────────────────────
+function verbsOpenDetail(idx) {
+  verbsCurrentIdx = idx;
+  verbsEditMode   = false;
+  document.getElementById('verbs-list-view').style.display   = 'none';
+  document.getElementById('verbs-detail-view').style.display = 'flex';
+  verbsRenderDetail();
+}
+
+function verbsBack() {
+  if(verbsEditMode && !confirm('¿Salir sin guardar los cambios?')) return;
+  verbsEditMode = false;
+  verbsRender();
+}
+
+function verbsNavigate(dir) {
+  const newIdx = verbsCurrentIdx + dir;
+  if(newIdx < 0 || newIdx >= verbsFiltered.length) return;
+  if(verbsEditMode && !confirm('¿Cambiar de verbo sin guardar?')) return;
+  verbsCurrentIdx = newIdx;
+  verbsEditMode   = false;
+  verbsRenderDetail();
+}
+
+function verbsRenderDetail() {
+  const v = verbsFiltered[verbsCurrentIdx];
+  if(!v) return;
+
+  // ── Topbar ────────────────────────────────────────────────────
+  document.getElementById('vd-inf').textContent = v.infinitif || '';
+  document.getElementById('vd-inf-ipa').textContent = v.ipa_infinitif || '';
+  document.getElementById('vd-meta').innerHTML = [
+    v.groupe     ? `<span class="vd-tag">Groupe ${v.groupe}</span>` : '',
+    v.auxiliaire ? `<span class="vd-aux">Aux. ${v.auxiliaire}</span>`  : '',
+    v.traductions ? `<span class="vd-trad">${v.traductions}</span>`  : ''
+  ].join('');
+
+  // ── Botones edit/save ─────────────────────────────────────────
+  const btnEdit = document.getElementById('btn-edit-toggle');
+  const btnSave = document.getElementById('btn-save-conj');
+  btnEdit.textContent = verbsEditMode ? '✕ Cancelar edición' : '✏️ Editar';
+  btnEdit.classList.toggle('active', verbsEditMode);
+  btnSave.style.display = verbsEditMode ? 'flex' : 'none';
+
+  // ── Nav prev/next ─────────────────────────────────────────────
+  document.getElementById('vd-nav-label').textContent =
+    `${verbsCurrentIdx+1} / ${verbsFiltered.length}`;
+  document.getElementById('btn-prev-verb').disabled = verbsCurrentIdx === 0;
+  document.getElementById('btn-next-verb').disabled = verbsCurrentIdx === verbsFiltered.length-1;
+
+  // ── Conjugaciones ─────────────────────────────────────────────
+  const conj      = v.conjugaisons || v.conjugaciones || {};
+  const knownTenses = TENSE_ORDER.filter(t => hasTenseData(conj, t));
+  const extraTenses = Object.keys(conj).filter(t => !TENSE_ORDER.includes(t) && hasTenseData(conj, t));
+  const allTenses   = [...knownTenses, ...extraTenses];
+
+  if(!allTenses.length) {
+    document.getElementById('vd-conj-grid').innerHTML =
+      '<div style="color:var(--gray);grid-column:1/-1;padding:20px 0">Sin conjugaciones disponibles</div>';
+    return;
+  }
+
+  let gridHTML = '';
+  allTenses.forEach(t => {
+    const label   = TENSE_LABELS[t] || t.replace(/_/g,' ');
+    const forms   = conj[t];          // objeto { "0":{forme:"..."}, "1":{forme:"..."}, … }
+    const editing = verbsEditMode;
+
+    // ── Seleccionar la lista de pronombres según el tiempo ───────
+    // TENSE_PRONOUNS cubre todos los tiempos conocidos.
+    // Para tiempos desconocidos, inferimos por la cantidad de formas.
+    let prons = TENSE_PRONOUNS[t];
+    if(!prons) {
+      const n = Object.keys(forms).length;
+      if     (n === 6) prons = PRONOUNS;
+      else if(n === 3) prons = PRONOUNS_IMP;
+      else if(n === 4) prons = PRONOUNS_PAR;
+      else {
+        if (label=="gérondif_passé")
+          prons = PRONOUNS_GEP;
+        else 
+          prons = PRONOUNS_SIN;
+      } 
+    }
+
+    // ── Filas de conjugación ─────────────────────────────────────
+    let rows = '';
+
+    if(typeof forms === 'object' && forms !== null) {
+      // Iterar en orden numérico de las claves ("0","1","2"…)
+      const keys = Object.keys(forms).sort((a,b) => Number(a)-Number(b));
+      keys.forEach((k, pos) => {
+        const entry = forms[k];
+        // La forma puede estar en entry.forme (objeto) o ser la cadena directa
+        const f = (typeof entry === 'object' && entry !== null)
+                  ? (entry.forme ?? '')
+                  : (entry ?? '');
+
+        // Pronombre: buscar primero por posición en el array, luego por clave
+        let pron = prons[pos] !== undefined ? prons[pos] : (prons[k] || '');
+        // Para PRONOUNS_PAR mostramos la etiqueta larga
+        if(prons === PRONOUNS_PAR) pron = PRONOUNS_PAR_LABELS[pron] || pron;
+
+        if(editing) {
+          rows += `<div class="conj-row">
+            <span class="conj-pron">${pron}</span>
+            <input class="conj-input" data-tense="${t}" data-key="${k}" data-part="forme" value="${(f||'').replace(/"/g,'&quot;')}">
+            <input class="conj-input" data-tense="${t}" data-key="${k}" data-part="ipa" value="${(entry.ipa||'').replace(/"/g,'&quot;')}">
+          </div>`;
+        } else {
+          rows += `<div class="conj-row">
+            <span class="conj-pron">${pron}</span>
+            <span class="conj-form">${f || '—'}</span>
+            <span class="conj-ipa">${entry.ipa || '—'}</span>
+          </div>`;
+        }
+      });
+
+    } else if(typeof forms === 'string') {
+      // Caso raro: la conjugación es directamente una cadena
+      if(editing) {
+        rows = `<div class="conj-row">
+          <input class="conj-input" data-tense="${t}" data-key="str" value="${forms.replace(/"/g,'&quot;')}">
+        </div>`;
+      } else {
+        rows = `<div class="conj-row"><span class="conj-form">${forms}</span></div>`;
+      }
+    }
+
+    gridHTML += `<div class="conj-tense${editing?' editing':''}">
+      <div class="conj-tense-title">${label}</div>${rows}
+    </div>`;
+  });
+
+  document.getElementById('vd-conj-grid').innerHTML = gridHTML;
+}
+
+function hasTenseData(conj, t) {
+  const d = conj[t];
+  if(!d) return false;
+  if(typeof d === 'string') return d.length > 0;
+  if(typeof d === 'object') return Object.keys(d).length > 0;
+  return false;
+}
+
+function verbsToggleEdit() {
+  verbsEditMode = !verbsEditMode;
+  verbsRenderDetail();
+}
+
+function verbsToggleConj() {
+  verbsHideConj = !verbsHideConj;
+  if(verbsHideConj)
+    document.getElementById('verbs-toggle').innerHTML="Mostrar sin conjugación";
+  else 
+    document.getElementById('verbs-toggle').innerHTML="Ocultar sin conjugación";
+  verbsRender();
+}
+
+function verbsSaveEdit() {
+  const v = verbsFiltered[verbsCurrentIdx];
+  if(!v) return;
+  const conj = v.conjugaisons || (v.conjugaisons = {});
+
+  document.querySelectorAll('#vd-conj-grid .conj-input').forEach(inp => {
+    const t   = inp.dataset.tense;
+    const key = inp.dataset.key;
+    const part = inp.dataset.part;
+    const val = inp.value.trim();
+
+    if(key === 'str') {
+      conj[t] = val;
+    } else if(conj[t] && typeof conj[t] === 'object') {
+      if(typeof conj[t][key] === 'object' && conj[t][key] !== null) {
+          conj[t][key][part] = val;
+      } else {
+        conj[t][key][part] = val;
+      }
+    }
+  });
+
+  // Sync back to DB: find the mot in DB.categories and update its conjugaisons
+  if(v._catId && v._subId) {
+    const cat = (DB.categories||[]).find(c=>c.id===v._catId);
+    const sub = cat && cat.subcategories.find(s=>s.id===v._subId);
+    const mot = sub && sub.mots.find(m=>m.mot===v.infinitif && m.type_mot==='verbe');
+    if(mot) mot.conjugaisons = conj;
+  }
+
+  verbsEditMode = false;
+  verbsRenderDetail();
+  showToast('💾', `Conjugaciones de "${v.infinitif}" guardadas`);
+}
+// ════════════════════════════════════════════════════════════════
+// EDICIÓN PALABRAS
+// ════════════════════════════════════════════════════════════════
+let wordsEditMode = false;
+
+function wordsToggleEdit() {
+  if(!DB) return;
+  if(wordsEditMode) {
+    if(!confirm('¿Salir del modo edición sin guardar?')) return;
+    wordsEditMode = false;
+  } else {
+    wordsEditMode = true;
+  }
+  wordsApplyEditUI();
+  renderPreview();
+}
+
+function wordsApplyEditUI() {
+  const btnEdit   = document.getElementById('btn-words-edit');
+  const btnSave   = document.getElementById('btn-words-save');
+  const banner    = document.getElementById('edit-mode-banner');
+  const btnExcelEl = document.getElementById('btn-excel');
+  const btnCsvEl   = document.getElementById('btn-csv');
+  const btnJsonEl  = document.getElementById('btn-json-preview');
+
+  btnEdit.textContent = wordsEditMode ? '✕ Cancelar' : '✏️ Editar';
+  btnEdit.classList.toggle('active', wordsEditMode);
+  btnSave.style.display = wordsEditMode ? 'flex' : 'none';
+  banner.classList.toggle('show', wordsEditMode);
+
+  if(wordsEditMode) {
+    btnExcelEl.disabled = true;
+    btnCsvEl.disabled   = true;
+    if(btnJsonEl) btnJsonEl.disabled = true;
+  } else {
+    const data = getFilteredData();
+    const has  = data.reduce((a,c)=>a+c.subcategories.reduce((b,s)=>b+s.mots.length,0),0) > 0;
+    btnExcelEl.disabled = !has;
+    btnCsvEl.disabled   = !has;
+    if(btnJsonEl) btnJsonEl.disabled = !has;
+  }
+}
+
+function wordsSaveEdit() {
+  if(!DB) return;
+  document.querySelectorAll('#preview-table .preview-row.editing').forEach(row => {
+    const catId  = row.dataset.catId;
+    const subId  = row.dataset.subId;
+    const motKey = row.dataset.mot;
+
+    const cat = DB.categories.find(c => c.id === catId);
+    if(!cat) return;
+    const sub = cat.subcategories.find(s => s.id === subId);
+    if(!sub) return;
+    const mot = sub.mots.find(m => m.mot === motKey);
+    if(!mot) return;
+
+    row.querySelectorAll('[data-field]').forEach(inp => {
+      const field = inp.dataset.field;
+      const val   = inp.value.trim();
+      if(field === 'traductions' || field === 'synonymes') {
+        mot[field] = val ? val.split(',').map(s => s.trim()).filter(Boolean) : [];
+      } else {
+        mot[field] = val;
+      }
+    });
+  });
+
+  wordsEditMode = false;
+  wordsApplyEditUI();
+  renderPreview();
+  showToast('💾', 'Cambios guardados en la base de datos');
+}
+
+// ── BOOT ──────────────────────────────────────────────────
+loadDB();
+</script>
+</body>
+</html>
