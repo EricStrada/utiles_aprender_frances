@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Générateur v13 — Dictionnaire Français</title>
+<title>Générateur v15 — Dictionnaire Français</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -80,6 +80,8 @@ h1{font-family:'Playfair Display',serif;font-size:clamp(22px,4vw,34px);font-weig
 .btn-excel:not(:disabled):hover{border-color:var(--gold);color:var(--gold-light);transform:translateY(-1px)}
 .btn-csv{background:var(--ink3);color:var(--gold);border:1px solid var(--border)}
 .btn-csv:not(:disabled):hover{border-color:var(--gold);color:var(--gold-light);transform:translateY(-1px)}
+.btn-cat{background:var(--ink3);color:var(--gold);border:1px solid var(--border)}
+.btn-cat:not(:disabled):hover{border-color:var(--gold);color:var(--gold-light);transform:translateY(-1px)}
 .btn-export-json{background:var(--ink3);color:var(--gold);border:1px solid var(--border)}
 .btn-export-json:not(:disabled):hover{border-color:var(--gold);color:var(--gold-light);transform:translateY(-1px)}
 .btn-export-json:disabled{opacity:.4;cursor:default}
@@ -327,9 +329,10 @@ h1{font-family:'Playfair Display',serif;font-size:clamp(22px,4vw,34px);font-weig
         <div class="db-stats" id="merge-db-stats"></div>
       </div>
       <div class="merge-actions">
-        <button class="btn btn-export-json" style="padding:9px 14px;font-size:12px" id="btn-export-json" onclick="exportJSON()" disabled>💾 Exportar JSON</button>
-        <button class="btn btn-excel" style="padding:9px 14px;font-size:12px" id="merge-btn-excel" onclick="exportExcel()" disabled>📊 Exportar Excel</button>
-        <button class="btn btn-csv" style="padding:9px 14px;font-size:12px" id="merge-btn-csv" onclick="exportCSV()" disabled>📄 Exportar CSV</button>
+        <button class="btn btn-export-json" style="padding:9px 14px;font-size:12px" id="btn-export-json" disabled onclick="exportJSON()">💾 Exportar JSON</button>
+        <button class="btn btn-excel" style="padding:9px 14px;font-size:12px" id="merge-btn-excel" disabled onclick="exportExcel()">📊 Exportar Excel</button>
+        <button class="btn btn-csv" style="padding:9px 14px;font-size:12px" id="merge-btn-csv" disabled onclick="exportCSV()">🧾 Exportar CSV</button>
+        <button class="btn btn-cat" style="padding:9px 14px;font-size:12px" id="merge-btn-cat" disabled onclick="exportCategoriesTXT()">📄 Exportar categorías</button>
       </div>
     </div>
     <div class="merge-box">
@@ -473,8 +476,8 @@ h1{font-family:'Playfair Display',serif;font-size:clamp(22px,4vw,34px);font-weig
         <div class="preview-meta" id="preview-meta">Cargando…</div>
       </div>
       <div class="export-btns">
-        <button class="btn-words-edit" id="btn-words-edit" onclick="wordsToggleEdit()">✏️ Editar</button>
-        <button class="btn-words-save" id="btn-words-save" onclick="wordsSaveEdit()">💾 Guardar cambios</button>
+        <button class="btn btn-words-edit" id="btn-words-edit" disabled onclick="wordsToggleEdit()">✏️ Editar</button>
+        <button class="btn btn-words-save" id="btn-words-save" onclick="wordsSaveEdit()">💾 Guardar cambios</button>
         <button class="btn-export-json btn" id="btn-json-preview" onclick="exportJSONPreview()" disabled style="padding:10px 18px">
           <span class="btn-icon">💾</span> Exportar JSON
         </button>
@@ -482,7 +485,10 @@ h1{font-family:'Playfair Display',serif;font-size:clamp(22px,4vw,34px);font-weig
           <span class="btn-icon">📊</span> Exportar Excel
         </button>
         <button class="btn btn-csv" id="btn-csv" onclick="exportCSV()" disabled>
-          <span class="btn-icon">📄</span> Exportar CSV
+          <span class="btn-icon">🧾</span> Exportar CSV
+        </button>
+        <button class="btn btn-cat" id="btn-cat" onclick="exportCategoriesTXT()" disabled>
+          <span class="btn-icon">📄</span> Exportar categorías
         </button>
       </div>
     </div>
@@ -703,8 +709,10 @@ function renderPreview(){
   document.getElementById('stat-subs').textContent=ts;
   document.getElementById('preview-meta').textContent=`${tw} palabras · ${data.length} categorías · ${ts} subcategorías`;
   const has=tw>0;
+  document.getElementById('btn-words-edit').disabled=!has;
   document.getElementById('btn-excel').disabled=!has;
   document.getElementById('btn-csv').disabled=!has;
+  document.getElementById('btn-cat').disabled=!has;
   const jsonBtn=document.getElementById('btn-json-preview');
   if(jsonBtn) jsonBtn.disabled=!has;
   const wrap=document.getElementById('preview-table');
@@ -857,7 +865,7 @@ function showToast(icon,text,err=false){
 function updateMergeStatus(){
   const nm=document.getElementById('merge-db-name');
   const st=document.getElementById('merge-db-stats');
-  ['btn-export-json','merge-btn-excel','merge-btn-csv'].forEach(id=>{const e=document.getElementById(id);if(e)e.disabled=!DB;});
+  ['btn-export-json','merge-btn-excel','merge-btn-csv','merge-btb-cat'].forEach(id=>{const e=document.getElementById(id);if(e)e.disabled=!DB;});
   if(!DB){nm.textContent='Sin base de datos cargada';st.innerHTML='';return;}
   nm.textContent=DB.meta?.title||'Dictionnaire de Français';
   const w=getTotalWords(DB),c=DB.categories.length,s=DB.categories.reduce((a,c)=>a+c.subcategories.length,0);
@@ -889,6 +897,23 @@ function exportJSON(){
   const a=Object.assign(document.createElement('a'),{href:URL.createObjectURL(blob),download:'dictionnaire_merged.json'});
   a.click(); URL.revokeObjectURL(a.href);
   showToast('💾',`JSON exportado: ${getTotalWords(DB)} palabras`);
+}
+
+// ── TXT EXPORT (solo categorías/subcategorías: título + id) ─
+function exportCategoriesTXT(){
+  if(!DB) return;
+  const lines=[];
+  DB.categories.forEach(cat=>{
+    lines.push(`${cat.nom} (${cat.id})`);
+    cat.subcategories.forEach(sub=>{
+      lines.push(`  - ${sub.nom} (${sub.id})`);
+    });
+  });
+  const txt=lines.join('\n');
+  const blob=new Blob([txt],{type:'text/plain;charset=utf-8'});
+  const a=Object.assign(document.createElement('a'),{href:URL.createObjectURL(blob),download:'categorias.txt'});
+  a.click(); URL.revokeObjectURL(a.href);
+  showToast('📄',`TXT exportado: ${DB.categories.length} categorías`);
 }
 
 // ── DRAG & DROP ───────────────────────────────────────────
